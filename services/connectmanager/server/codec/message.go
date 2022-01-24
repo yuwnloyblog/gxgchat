@@ -82,7 +82,7 @@ func (msg *MsgHeader) SetCmd(cmd int) {
 }
 
 func (msg *MsgHeader) EncodeHeader(buf *bytes.Buffer, bodyBytes []byte) {
-	buf.WriteByte(msg.Version) // 1
+	buf.WriteByte(msg.Version)
 	buf.WriteByte(msg.HeaderCode)
 
 	msg.MsgBodySize = len(bodyBytes)

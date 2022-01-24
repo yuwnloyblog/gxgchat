@@ -26,16 +26,34 @@ func (*IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Messag
 	if version == Version_0 {
 		msgHeader := &MsgHeader{Version: Version_0}
 		msgHeader.DecodeHeader(reader)
-
-		msgBodyBytes := make([]byte, msgHeader.MsgBodySize)
-		reader.Read(msgBodyBytes)
+		var msgBodyBytes []byte
+		if msgHeader.MsgBodySize > 0 {
+			msgBodyBytes = make([]byte, msgHeader.MsgBodySize)
+			reader.Read(msgBodyBytes)
+		} else {
+			msgBodyBytes = []byte{}
+		}
 
 		//validate checksum  TODO
 		switch msgHeader.GetCmd() {
 		case Cmd_Connect:
 			imMsg = NewConnectMessage(msgHeader)
-			imMsg.DecodeBody(msgBodyBytes)
+		case Cmd_Disconnect:
+			imMsg = NewDisconnectMessage(msgHeader)
+		case Cmd_Ping:
+			imMsg = NewPingMessage(msgHeader)
+		case Cmd_Publish:
+			imMsg = NewUserPublishMessage(msgHeader)
+		case Cmd_PublishAck:
+			imMsg = NewServerPublishAckMessage(msgHeader)
+		case Cmd_Query:
+			imMsg = NewQueryMessage(msgHeader)
+		case Cmd_QueryConfirm:
+			imMsg = NewQueryConfirmMessage(msgHeader)
+		default:
+			return
 		}
+		imMsg.DecodeBody(msgBodyBytes)
 	}
 	ctx.HandleRead(imMsg)
 }
@@ -45,9 +63,10 @@ func (*IMCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Mess
 		msgBody, err := s.EncodeBody()
 		if err == nil {
 			buf := bytes.NewBuffer([]byte{})
-
 			s.EncodeHeader(buf, msgBody) //encode header
-			buf.Write(msgBody)           //write msg body
+			if len(msgBody) > 0 {
+				buf.Write(msgBody) //write msg body
+			}
 			ctx.HandleWrite(buf)
 		}
 	default:

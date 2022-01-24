@@ -2,13 +2,17 @@ package codec
 
 import "github.com/yuwnloyblog/gxgchat/commons/tools"
 
-type DisconnectMessage struct {
+type ServerPublishAckMessage struct {
 	MsgHeader
-	MsgBody *DisconnectMsgBody
+	MsgBody *PublishAckMsgBody
 }
 
-func NewDisconnectMessage(header *MsgHeader) *DisconnectMessage {
-	msg := &DisconnectMessage{
+type UserPublishAckMessage struct {
+	ServerPublishAckMessage
+}
+
+func NewServerPublishAckMessage(header *MsgHeader) *ServerPublishAckMessage {
+	msg := &ServerPublishAckMessage{
 		MsgHeader: MsgHeader{
 			Version:     Version_0,
 			HeaderCode:  header.HeaderCode,
@@ -16,19 +20,17 @@ func NewDisconnectMessage(header *MsgHeader) *DisconnectMessage {
 			MsgBodySize: header.MsgBodySize,
 		},
 	}
-	msg.SetCmd(Cmd_Disconnect)
-	msg.SetQoS(QoS_NoAck)
 	return msg
 }
 
-func (msg *DisconnectMessage) EncodeBody() ([]byte, error) {
+func (msg *ServerPublishAckMessage) EncodeBody() ([]byte, error) {
 	if msg.MsgBody != nil {
 		return tools.PbMarshal(msg.MsgBody)
 	}
 	return nil, &CodecError{"MsgBody's length is 0."}
 }
 
-func (msg *DisconnectMessage) DecodeBody(msgBodyBytes []byte) error {
-	msg.MsgBody = &DisconnectMsgBody{}
+func (msg *ServerPublishAckMessage) DecodeBody(msgBodyBytes []byte) error {
+	msg.MsgBody = &PublishAckMsgBody{}
 	return tools.PbUnMarshal(msgBodyBytes, msg.MsgBody)
 }

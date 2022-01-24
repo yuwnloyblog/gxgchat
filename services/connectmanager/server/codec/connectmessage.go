@@ -12,8 +12,10 @@ type ConnectMessage struct {
 func NewConnectMessage(header *MsgHeader) *ConnectMessage {
 	msg := &ConnectMessage{
 		MsgHeader: MsgHeader{
-			Version:  Version_0,
-			Checksum: header.Checksum,
+			Version:     Version_0,
+			HeaderCode:  header.HeaderCode,
+			Checksum:    header.Checksum,
+			MsgBodySize: header.MsgBodySize,
 		},
 	}
 	msg.SetCmd(Cmd_Connect)

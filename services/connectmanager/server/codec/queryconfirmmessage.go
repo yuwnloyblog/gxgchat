@@ -2,13 +2,13 @@ package codec
 
 import "github.com/yuwnloyblog/gxgchat/commons/tools"
 
-type DisconnectMessage struct {
+type QueryConfirmMessage struct {
 	MsgHeader
-	MsgBody *DisconnectMsgBody
+	MsgBody *QueryConfirmMsgBody
 }
 
-func NewDisconnectMessage(header *MsgHeader) *DisconnectMessage {
-	msg := &DisconnectMessage{
+func NewQueryConfirmMessage(header *MsgHeader) *QueryConfirmMessage {
+	msg := &QueryConfirmMessage{
 		MsgHeader: MsgHeader{
 			Version:     Version_0,
 			HeaderCode:  header.HeaderCode,
@@ -16,19 +16,17 @@ func NewDisconnectMessage(header *MsgHeader) *DisconnectMessage {
 			MsgBodySize: header.MsgBodySize,
 		},
 	}
-	msg.SetCmd(Cmd_Disconnect)
-	msg.SetQoS(QoS_NoAck)
 	return msg
 }
 
-func (msg *DisconnectMessage) EncodeBody() ([]byte, error) {
+func (msg *QueryConfirmMessage) EncodeBody() ([]byte, error) {
 	if msg.MsgBody != nil {
 		return tools.PbMarshal(msg.MsgBody)
 	}
 	return nil, &CodecError{"MsgBody's length is 0."}
 }
 
-func (msg *DisconnectMessage) DecodeBody(msgBodyBytes []byte) error {
-	msg.MsgBody = &DisconnectMsgBody{}
+func (msg *QueryConfirmMessage) DecodeBody(msgBodyBytes []byte) error {
+	msg.MsgBody = &QueryConfirmMsgBody{}
 	return tools.PbUnMarshal(msgBodyBytes, msg.MsgBody)
 }
