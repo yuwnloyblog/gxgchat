@@ -2,7 +2,6 @@ syntax = "proto3";
 
 option go_package = "./codec";
 
-//Apple|iPhone8,1|11.4.1|WIFI|46001
 message ConnectMsgBody{
     string protoId = 1;
     string sdkVersion = 2; //sdk 版本
@@ -20,4 +19,50 @@ message ConnectMsgBody{
     string networkId = 11;//网络类型；4G/wifi
     string isp_num = 12;//网络运营商编号
     string clientIp = 13;
+}
+
+message ConnectAckMsgBody{
+    int32 code = 1;
+    string userId = 2;
+    string session = 3;
+    int64 timestamp = 4;
+}
+
+message DisconnectMsgBody{
+    int32 code = 1;
+    int64 timestamp = 2;
+}
+
+message PublishMsgBody{
+    int32 index = 1;
+    string topic = 2;
+    string targetId = 3;
+    int64 timestamp = 4;
+    bytes data = 5;
+}
+
+message PublishAckMsgBody{
+    int32 index = 1;
+    int32 code = 2;
+    string msgId = 3;
+    int64 timestamp = 4;
+}
+
+message QueryMsgBody{
+    int32 index = 1;
+    string topic = 2;
+    string targetId = 3;
+    int64 timestamp = 4;
+    bytes data = 5;
+}
+
+message QueryAckMsgBody{
+    int32 index = 1;
+    int32 code = 2;
+    int64 timestamp = 3;
+    bytes data = 4;
+}
+
+message QueryConfirmMsgBody{
+    int32 index = 1;
 }

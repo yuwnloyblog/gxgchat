@@ -32,7 +32,3 @@ func (msg *ConnectMessage) DecodeBody(msgBodyBytes []byte) error {
 	msg.MsgBody = &ConnectMsgBody{}
 	return tools.PbUnMarshal(msgBodyBytes, msg.MsgBody)
 }
-
-func (msg *ConnectMessage) GetMsgBodySize() int {
-	return msg.MsgBodySize
-}

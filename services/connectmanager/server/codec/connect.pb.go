@@ -20,7 +20,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-//Apple|iPhone8,1|11.4.1|WIFI|46001
 type ConnectMsgBody struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -166,6 +165,479 @@ func (x *ConnectMsgBody) GetClientIp() string {
 	return ""
 }
 
+type ConnectAckMsgBody struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code      int32  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	UserId    string `protobuf:"bytes,2,opt,name=userId,proto3" json:"userId,omitempty"`
+	Session   string `protobuf:"bytes,3,opt,name=session,proto3" json:"session,omitempty"`
+	Timestamp int64  `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+}
+
+func (x *ConnectAckMsgBody) Reset() {
+	*x = ConnectAckMsgBody{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_connect_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ConnectAckMsgBody) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConnectAckMsgBody) ProtoMessage() {}
+
+func (x *ConnectAckMsgBody) ProtoReflect() protoreflect.Message {
+	mi := &file_connect_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConnectAckMsgBody.ProtoReflect.Descriptor instead.
+func (*ConnectAckMsgBody) Descriptor() ([]byte, []int) {
+	return file_connect_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ConnectAckMsgBody) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *ConnectAckMsgBody) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *ConnectAckMsgBody) GetSession() string {
+	if x != nil {
+		return x.Session
+	}
+	return ""
+}
+
+func (x *ConnectAckMsgBody) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
+type DisconnectMsgBody struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code      int32 `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	Timestamp int64 `protobuf:"varint,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+}
+
+func (x *DisconnectMsgBody) Reset() {
+	*x = DisconnectMsgBody{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_connect_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DisconnectMsgBody) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DisconnectMsgBody) ProtoMessage() {}
+
+func (x *DisconnectMsgBody) ProtoReflect() protoreflect.Message {
+	mi := &file_connect_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DisconnectMsgBody.ProtoReflect.Descriptor instead.
+func (*DisconnectMsgBody) Descriptor() ([]byte, []int) {
+	return file_connect_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *DisconnectMsgBody) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *DisconnectMsgBody) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
+type PublishMsgBody struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Index     int32  `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
+	Topic     string `protobuf:"bytes,2,opt,name=topic,proto3" json:"topic,omitempty"`
+	TargetId  string `protobuf:"bytes,3,opt,name=targetId,proto3" json:"targetId,omitempty"`
+	Timestamp int64  `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Data      []byte `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *PublishMsgBody) Reset() {
+	*x = PublishMsgBody{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_connect_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PublishMsgBody) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublishMsgBody) ProtoMessage() {}
+
+func (x *PublishMsgBody) ProtoReflect() protoreflect.Message {
+	mi := &file_connect_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublishMsgBody.ProtoReflect.Descriptor instead.
+func (*PublishMsgBody) Descriptor() ([]byte, []int) {
+	return file_connect_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *PublishMsgBody) GetIndex() int32 {
+	if x != nil {
+		return x.Index
+	}
+	return 0
+}
+
+func (x *PublishMsgBody) GetTopic() string {
+	if x != nil {
+		return x.Topic
+	}
+	return ""
+}
+
+func (x *PublishMsgBody) GetTargetId() string {
+	if x != nil {
+		return x.TargetId
+	}
+	return ""
+}
+
+func (x *PublishMsgBody) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
+func (x *PublishMsgBody) GetData() []byte {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type PublishAckMsgBody struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Index     int32  `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
+	Code      int32  `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
+	MsgId     string `protobuf:"bytes,3,opt,name=msgId,proto3" json:"msgId,omitempty"`
+	Timestamp int64  `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+}
+
+func (x *PublishAckMsgBody) Reset() {
+	*x = PublishAckMsgBody{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_connect_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PublishAckMsgBody) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublishAckMsgBody) ProtoMessage() {}
+
+func (x *PublishAckMsgBody) ProtoReflect() protoreflect.Message {
+	mi := &file_connect_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublishAckMsgBody.ProtoReflect.Descriptor instead.
+func (*PublishAckMsgBody) Descriptor() ([]byte, []int) {
+	return file_connect_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *PublishAckMsgBody) GetIndex() int32 {
+	if x != nil {
+		return x.Index
+	}
+	return 0
+}
+
+func (x *PublishAckMsgBody) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *PublishAckMsgBody) GetMsgId() string {
+	if x != nil {
+		return x.MsgId
+	}
+	return ""
+}
+
+func (x *PublishAckMsgBody) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
+type QueryMsgBody struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Index     int32  `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
+	Topic     string `protobuf:"bytes,2,opt,name=topic,proto3" json:"topic,omitempty"`
+	TargetId  string `protobuf:"bytes,3,opt,name=targetId,proto3" json:"targetId,omitempty"`
+	Timestamp int64  `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Data      []byte `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *QueryMsgBody) Reset() {
+	*x = QueryMsgBody{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_connect_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryMsgBody) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryMsgBody) ProtoMessage() {}
+
+func (x *QueryMsgBody) ProtoReflect() protoreflect.Message {
+	mi := &file_connect_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryMsgBody.ProtoReflect.Descriptor instead.
+func (*QueryMsgBody) Descriptor() ([]byte, []int) {
+	return file_connect_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *QueryMsgBody) GetIndex() int32 {
+	if x != nil {
+		return x.Index
+	}
+	return 0
+}
+
+func (x *QueryMsgBody) GetTopic() string {
+	if x != nil {
+		return x.Topic
+	}
+	return ""
+}
+
+func (x *QueryMsgBody) GetTargetId() string {
+	if x != nil {
+		return x.TargetId
+	}
+	return ""
+}
+
+func (x *QueryMsgBody) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
+func (x *QueryMsgBody) GetData() []byte {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type QueryAckMsgBody struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Index     int32  `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
+	Code      int32  `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
+	Timestamp int64  `protobuf:"varint,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Data      []byte `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *QueryAckMsgBody) Reset() {
+	*x = QueryAckMsgBody{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_connect_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryAckMsgBody) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryAckMsgBody) ProtoMessage() {}
+
+func (x *QueryAckMsgBody) ProtoReflect() protoreflect.Message {
+	mi := &file_connect_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryAckMsgBody.ProtoReflect.Descriptor instead.
+func (*QueryAckMsgBody) Descriptor() ([]byte, []int) {
+	return file_connect_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *QueryAckMsgBody) GetIndex() int32 {
+	if x != nil {
+		return x.Index
+	}
+	return 0
+}
+
+func (x *QueryAckMsgBody) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *QueryAckMsgBody) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
+func (x *QueryAckMsgBody) GetData() []byte {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type QueryConfirmMsgBody struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Index int32 `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
+}
+
+func (x *QueryConfirmMsgBody) Reset() {
+	*x = QueryConfirmMsgBody{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_connect_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryConfirmMsgBody) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryConfirmMsgBody) ProtoMessage() {}
+
+func (x *QueryConfirmMsgBody) ProtoReflect() protoreflect.Message {
+	mi := &file_connect_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryConfirmMsgBody.ProtoReflect.Descriptor instead.
+func (*QueryConfirmMsgBody) Descriptor() ([]byte, []int) {
+	return file_connect_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *QueryConfirmMsgBody) GetIndex() int32 {
+	if x != nil {
+		return x.Index
+	}
+	return 0
+}
+
 var File_connect_proto protoreflect.FileDescriptor
 
 var file_connect_proto_rawDesc = []byte{
@@ -195,8 +667,54 @@ var file_connect_proto_rawDesc = []byte{
 	0x69, 0x73, 0x70, 0x5f, 0x6e, 0x75, 0x6d, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x69,
 	0x73, 0x70, 0x4e, 0x75, 0x6d, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x49,
 	0x70, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x49,
-	0x70, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x2f, 0x63, 0x6f, 0x64, 0x65, 0x63, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x22, 0x77, 0x0a, 0x11, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x41, 0x63, 0x6b, 0x4d,
+	0x73, 0x67, 0x42, 0x6f, 0x64, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x75, 0x73,
+	0x65, 0x72, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72,
+	0x49, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x1c, 0x0a, 0x09,
+	0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52,
+	0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0x45, 0x0a, 0x11, 0x44, 0x69,
+	0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x4d, 0x73, 0x67, 0x42, 0x6f, 0x64, 0x79, 0x12,
+	0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63,
+	0x6f, 0x64, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x22, 0x8a, 0x01, 0x0a, 0x0e, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x4d, 0x73, 0x67,
+	0x42, 0x6f, 0x64, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f,
+	0x70, 0x69, 0x63, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x70, 0x69, 0x63,
+	0x12, 0x1a, 0x0a, 0x08, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x08, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x12, 0x1c, 0x0a, 0x09,
+	0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52,
+	0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61,
+	0x74, 0x61, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x71,
+	0x0a, 0x11, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x41, 0x63, 0x6b, 0x4d, 0x73, 0x67, 0x42,
+	0x6f, 0x64, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x14, 0x0a,
+	0x05, 0x6d, 0x73, 0x67, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6d, 0x73,
+	0x67, 0x49, 0x64, 0x12, 0x1c, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x22, 0x88, 0x01, 0x0a, 0x0c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4d, 0x73, 0x67, 0x42, 0x6f,
+	0x64, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x70, 0x69,
+	0x63, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x70, 0x69, 0x63, 0x12, 0x1a,
+	0x0a, 0x08, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x12, 0x1c, 0x0a, 0x09, 0x74, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x74,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x6d, 0x0a, 0x0f,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x63, 0x6b, 0x4d, 0x73, 0x67, 0x42, 0x6f, 0x64, 0x79, 0x12,
+	0x14, 0x0a, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05,
+	0x69, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x74, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x74, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x2b, 0x0a, 0x13, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x4d, 0x73, 0x67, 0x42, 0x6f,
+	0x64, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x2f, 0x63, 0x6f,
+	0x64, 0x65, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -211,9 +729,16 @@ func file_connect_proto_rawDescGZIP() []byte {
 	return file_connect_proto_rawDescData
 }
 
-var file_connect_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_connect_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_connect_proto_goTypes = []interface{}{
-	(*ConnectMsgBody)(nil), // 0: ConnectMsgBody
+	(*ConnectMsgBody)(nil),      // 0: ConnectMsgBody
+	(*ConnectAckMsgBody)(nil),   // 1: ConnectAckMsgBody
+	(*DisconnectMsgBody)(nil),   // 2: DisconnectMsgBody
+	(*PublishMsgBody)(nil),      // 3: PublishMsgBody
+	(*PublishAckMsgBody)(nil),   // 4: PublishAckMsgBody
+	(*QueryMsgBody)(nil),        // 5: QueryMsgBody
+	(*QueryAckMsgBody)(nil),     // 6: QueryAckMsgBody
+	(*QueryConfirmMsgBody)(nil), // 7: QueryConfirmMsgBody
 }
 var file_connect_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -241,6 +766,90 @@ func file_connect_proto_init() {
 				return nil
 			}
 		}
+		file_connect_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ConnectAckMsgBody); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_connect_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DisconnectMsgBody); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_connect_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PublishMsgBody); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_connect_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PublishAckMsgBody); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_connect_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryMsgBody); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_connect_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryAckMsgBody); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_connect_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryConfirmMsgBody); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -248,7 +857,7 @@ func file_connect_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_connect_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

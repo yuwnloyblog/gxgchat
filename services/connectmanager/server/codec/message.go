@@ -40,7 +40,6 @@ type IMessage interface {
 	DecodeHeader(reader io.Reader)
 	EncodeBody() ([]byte, error)
 	DecodeBody(msgBodyBytes []byte) error
-	GetMsgBodySize() int
 }
 
 type MsgHeader struct {
