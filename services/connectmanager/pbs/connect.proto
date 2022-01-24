@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option go_package = "./codec";
+
+//Apple|iPhone8,1|11.4.1|WIFI|46001
+message ConnectMsgBody{
+    string protoId = 1;
+    string sdkVersion = 2; //sdk 版本
+    string appId = 3;
+    string token = 4;
+
+    //设备信息
+    string deviceId = 5;
+    string plantId = 6;//iOS/Android/iPad
+    string deviceCompany = 7;//设备厂商, huawei/apple
+    string deviceModel = 8;//设备型号  例如: iPhone8
+    string deviceOsVersion = 9;//手机操作系统版本
+    string pushToken = 10;//厂商推送Token
+    //网络
+    string networkId = 11;//网络类型；4G/wifi
+    string isp_num = 12;//网络运营商编号
+    string clientIp = 13;
+}

@@ -3,11 +3,11 @@ package codec
 import (
 	"bytes"
 	"io"
-
-	"github.com/yuwnloyblog/gxgchat/commons/utils"
 )
 
 const (
+	Version_0 byte = byte(0)
+
 	QoS_NoAck   int = 0
 	QoS_NeedAck int = 1
 
@@ -23,88 +23,134 @@ const (
 	Cmd_Pong         int = 9
 )
 
+type CodecError struct {
+	ErrMsg string
+}
+
+func (err *CodecError) Error() string {
+	return err.ErrMsg
+}
+
 type IMessage interface {
-	Encode() *bytes.Buffer
-	Decode(io.Reader)
-	MsgLength() int
+	GetQoS() int
+	SetQoS(int)
+	GetCmd() int
+	SetCmd(int)
+	EncodeHeader(buf *bytes.Buffer, bodyBytes []byte)
+	DecodeHeader(reader io.Reader)
+	EncodeBody() ([]byte, error)
+	DecodeBody(msgBodyBytes []byte) error
+	GetMsgBodySize() int
 }
 
 type MsgHeader struct {
-	version  byte
-	cmd      int
-	qos      int
-	checksum byte
+	Version     byte
+	HeaderCode  byte
+	Checksum    byte
+	MsgBodySize int
 }
 
-type BaseMessage struct {
-	MsgHeader
-	Name string
-	Age  int
+// type BaseMessage struct {
+// 	MsgHeader
+// 	Name string
+// 	Age  int
+// }
+
+func (msg *MsgHeader) GetQoS() int {
+	var qos byte
+	qos = msg.HeaderCode >> 2
+	qos = qos & 0x03
+	return int(qos)
+}
+func (msg *MsgHeader) SetQoS(qos int) {
+	tmpQoS := byte(qos)
+	tmpQoS = tmpQoS & 0x03
+	tmpQoS = tmpQoS << 2
+	msg.HeaderCode = msg.HeaderCode | tmpQoS
 }
 
-func (msg *BaseMessage) EncodeHeader(buf *bytes.Buffer) {
-	buf.WriteByte(msg.version) // 1
-	headerCode := msg.cmd & 0x0F
-	headerCode = headerCode << 4
-	qos := msg.qos & 0x03
-	qos = qos << 6
-	headerCode = headerCode | qos
-
-	buf.WriteByte(byte(headerCode))
-	buf.WriteByte(msg.checksum)
+func (msg *MsgHeader) GetCmd() int {
+	var cmd byte
+	cmd = msg.HeaderCode >> 4
+	cmd = cmd & 0x0f
+	return int(cmd)
+}
+func (msg *MsgHeader) SetCmd(cmd int) {
+	tmpCmd := byte(cmd)
+	tmpCmd = tmpCmd & 0x0f
+	tmpCmd = tmpCmd << 4
+	msg.HeaderCode = msg.HeaderCode | tmpCmd
 }
 
-func (msg *BaseMessage) Encode() *bytes.Buffer {
+func (msg *MsgHeader) EncodeHeader(buf *bytes.Buffer, bodyBytes []byte) {
+	buf.WriteByte(msg.Version) // 1
+	buf.WriteByte(msg.HeaderCode)
+
+	msg.MsgBodySize = len(bodyBytes)
+	msg.calChecksum(bodyBytes)
+
+	buf.WriteByte(msg.Checksum)
+	//write body size
+	buf.Write(MsgBodySize2Bytes(msg.MsgBodySize))
+}
+
+func (msg *MsgHeader) DecodeHeader(reader io.Reader) {
+	tmpBs := make([]byte, 1)
+	reader.Read(tmpBs)
+	msg.HeaderCode = tmpBs[0]
+
+	reader.Read(tmpBs)
+	msg.Checksum = tmpBs[0]
+
+	msg.MsgBodySize = Bytes2MsgBodySize(reader)
+}
+
+func (msg *MsgHeader) calChecksum(bodyBytes []byte) {
+	msg.Checksum = msg.HeaderCode
+	for _, b := range bodyBytes {
+		msg.Checksum = msg.Checksum ^ b
+	}
+}
+
+func MsgBodySize2Bytes(msgBodySize int) []byte {
 	buf := bytes.NewBuffer([]byte{})
-	msg.EncodeHeader(buf)
-	buf.Write(utils.Int2Bytes(msg.MsgLength()))
-	nameBytes := utils.String2Bytes(msg.Name)
-	lenNameBytes := utils.Int2Bytes(len(nameBytes))
-	buf.Write(lenNameBytes)
-	buf.Write(nameBytes)
-
-	ageBytes := utils.Int2Bytes(msg.Age)
-	//fmt.Println("age:", msg.Age, "\t", utils.Bytes2Int(ageBytes))
-	buf.Write(ageBytes)
-	return buf
+	msgLength := msgBodySize
+	if msgLength > 0 {
+		for {
+			b := byte(msgLength & 0x7f)
+			msgLength = msgLength >> 7
+			if msgLength > 0 {
+				b = b | 0x80
+			}
+			buf.WriteByte(b)
+			if msgLength <= 0 {
+				break
+			}
+		}
+	}
+	return buf.Bytes()
+}
+func Bytes2MsgBodySize(reader io.Reader) int {
+	msgLength := 0
+	multiplier := 1
+	digit := 0
+	for {
+		readByte, err := readByte(reader)
+		if err != nil {
+			return 0
+		}
+		digit = int(readByte)
+		msgLength += (digit & 0x7f) * multiplier
+		multiplier *= 128
+		if (digit & 0x80) <= 0 {
+			break
+		}
+	}
+	return msgLength
 }
 
-func (msg *BaseMessage) Decode(reader io.Reader) {
-	b := make([]byte, 1)
-	reader.Read(b)
-	msg.version = b[0]
-	reader.Read(b)
-	msg.cmd = int(b[0])
-	reader.Read(b)
-	msg.checksum = b[0]
-
-	lengthBytes := make([]byte, 4)
-	reader.Read(lengthBytes)
-	length := utils.Bytes2Int(lengthBytes)
-	msgBytes := make([]byte, length)
-	reader.Read(msgBytes)
-	//encode or decode for msgBytes
-	msgReader := bytes.NewReader(msgBytes)
-	nameLenBytes := make([]byte, 4)
-	msgReader.Read(nameLenBytes)
-	nameLen := utils.Bytes2Int(nameLenBytes)
-
-	nameBytes := make([]byte, nameLen)
-	msgReader.Read(nameBytes)
-	name := utils.Bytes2String(nameBytes)
-
-	ageBytes := make([]byte, 4)
-	msgReader.Read(ageBytes)
-	age := utils.Bytes2Int(ageBytes)
-
-	msg.Name = name
-	msg.Age = age
-}
-
-func (msg *BaseMessage) MsgLength() int {
-	length := 4 + 3
-	nameBytes := utils.String2Bytes(msg.Name)
-	length += len(nameBytes)
-	length += 4
-	return length
+func readByte(reader io.Reader) (byte, error) {
+	bs := make([]byte, 1)
+	_, err := reader.Read(bs)
+	return bs[0], err
 }

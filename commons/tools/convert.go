@@ -1,8 +1,11 @@
-package utils
+package tools
 
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/json"
+
+	"google.golang.org/protobuf/proto"
 )
 
 func String2Bytes(s string) []byte {
@@ -32,4 +35,21 @@ func Int2Bytes(i int) []byte {
 	tmp := uint32(i)
 	binary.Write(buf, binary.BigEndian, tmp)
 	return buf.Bytes()
+}
+
+func PbMarshal(obj proto.Message) ([]byte, error) {
+	bytes, err := proto.Marshal(obj)
+	return bytes, err
+}
+func PbUnMarshal(bytes []byte, typeScope proto.Message) error {
+	err := proto.Unmarshal(bytes, typeScope)
+	return err
+}
+
+func JsonMarshal(obj interface{}) ([]byte, error) {
+	return json.Marshal(obj)
+}
+
+func JsonUnMarshal(bytes []byte, obj interface{}) error {
+	return json.Unmarshal(bytes, obj)
 }

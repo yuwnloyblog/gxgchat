@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"time"
 
@@ -37,27 +36,7 @@ int first = buf.readByte();
 */
 
 func main() {
-	//	TestNetty()
-
-	buf := bytes.NewBuffer([]byte{})
-	buf.WriteByte(byte(2))
-
-	cou, err := buf.WriteString("aabb")
-
-	fmt.Println(cou, ":", err)
-
-	fmt.Println(len(buf.Bytes()))
-
-	//reader := bytes.NewReader(buf.Bytes())
-
-	bx := byte(255)
-
-	fmt.Println(bx)
-	// ab := 4
-
-	// xx := ab & 0x03
-
-	// fmt.Println(xx)
+	TestNetty()
 }
 
 func TestNetty() {
@@ -106,9 +85,11 @@ type EchoHandler struct {
 func (l EchoHandler) HandleActive(ctx netty.ActiveContext) {
 	if l.flag {
 		fmt.Println(l.role, "->", "active:", ctx.Channel().RemoteAddr())
-		msg := &codec.BaseMessage{
-			Name: l.role,
-			Age:  12,
+		msgHeader := &codec.MsgHeader{Version: codec.Version_0}
+		msg := codec.NewConnectMessage(msgHeader)
+		msg.MsgBody = &codec.ConnectMsgBody{
+			ProtoId:  "protoId",
+			DeviceId: "deviceId",
 		}
 		ctx.Write(msg)
 	}
@@ -122,9 +103,9 @@ func (l EchoHandler) HandleRead(ctx netty.InboundContext, message netty.Message)
 	if !l.flag {
 		fmt.Println("atachemetn:", ctx.Attachment())
 		fmt.Println(l.role, "->", "handle read:", message)
-		m, ok := message.(*codec.BaseMessage)
+		m, ok := message.(*codec.ConnectMessage)
 		if ok {
-			fmt.Println("name:", m.Name, "\tage:", m.Age)
+			fmt.Println("name:", m.MsgBody.ProtoId, "\tage:", m.MsgBody.DeviceId)
 		} else {
 			fmt.Println("xxxxxxx")
 		}
