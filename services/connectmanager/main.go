@@ -45,7 +45,7 @@ func TestNetty() {
 		channel.Pipeline().
 			// AddLast(frame.LengthFieldCodec(binary.LittleEndian, 1024, 0, 2, 0, 2)).
 			// AddLast(format.TextCodec()).
-			AddLast(&codec.IMCodecHandler{}).
+			AddLast(codec.IMCodecHandler{}).
 			AddLast(EchoHandler{
 				role: "Server",
 			})
@@ -56,7 +56,7 @@ func TestNetty() {
 		channel.Pipeline().
 			// AddLast(frame.LengthFieldCodec(binary.LittleEndian, 1024, 0, 2, 0, 2)).
 			// AddLast(format.TextCodec()).
-			AddLast(&codec.IMCodecHandler{}).
+			AddLast(codec.IMCodecHandler{}).
 			AddLast(EchoHandler{
 				role: "Client",
 				flag: true,

@@ -14,7 +14,7 @@ func (*IMCodecHandler) CodecName() string {
 	return "im-codec"
 }
 
-func (*IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
+func (IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
 	reader := utils.MustToReader(message)
 	ctx.SetAttachment("zafdsfsfa")
 
@@ -57,7 +57,7 @@ func (*IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Messag
 	}
 	ctx.HandleRead(imMsg)
 }
-func (*IMCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Message) {
+func (IMCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Message) {
 	switch s := message.(type) {
 	case IMessage:
 		msgBody, err := s.EncodeBody()
