@@ -36,7 +36,7 @@ int first = buf.readByte();
 */
 
 func main() {
-	// TestNetty()
+	TestNetty()
 }
 
 func TestNetty() {

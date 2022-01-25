@@ -16,8 +16,6 @@ func (*IMCodecHandler) CodecName() string {
 
 func (IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
 	reader := utils.MustToReader(message)
-	ctx.SetAttachment("zafdsfsfa")
-
 	var imMsg IMessage
 
 	tmpBs := make([]byte, 1)
