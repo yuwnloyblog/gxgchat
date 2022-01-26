@@ -8,18 +8,32 @@ import (
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
 )
 
+// type ImListener interface {
+// 	Create(ctx netty.ActiveContext)
+// 	Close(ctx netty.InactiveContext)
+// 	ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception)
+
+// 	Connected(msg *codec.ConnectMessage, ctx netty.InboundContext)
+// 	Diconnected(msg *codec.DisconnectMessage, ctx netty.InboundContext)
+// 	PublishArrived(msg *codec.UserPublishMessage, ctx netty.InboundContext)
+// 	PubAckArrived(msg *codec.ServerPublishAckMessage, ctx netty.InboundContext)
+// 	QueryArrived(msg *codec.QueryMessage, ctx netty.InboundContext)
+// 	QueryConfirmArrived(msg *codec.QueryConfirmMessage, ctx netty.InboundContext)
+// 	PingArrived(msg *codec.PingMessage, ctx netty.InboundContext)
+// }
+
 type ImListener interface {
 	Create(ctx netty.ActiveContext)
 	Close(ctx netty.InactiveContext)
 	ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception)
 
-	Connected(msg *codec.ConnectMessage, ctx netty.InboundContext)
-	Diconnected(msg *codec.DisconnectMessage, ctx netty.InboundContext)
-	PublishArrived(msg *codec.UserPublishMessage, ctx netty.InboundContext)
-	PubAckArrived(msg *codec.ServerPublishAckMessage, ctx netty.InboundContext)
-	QueryArrived(msg *codec.QueryMessage, ctx netty.InboundContext)
-	QueryConfirmArrived(msg *codec.QueryConfirmMessage, ctx netty.InboundContext)
-	PingArrived(msg *codec.PingMessage, ctx netty.InboundContext)
+	Connected(msg *codec.ConnectMsgBody, ctx netty.InboundContext)
+	Diconnected(msg *codec.DisconnectMsgBody, ctx netty.InboundContext)
+	PublishArrived(msg *codec.PublishMsgBody, ctx netty.InboundContext)
+	PubAckArrived(msg *codec.PublishAckMsgBody, ctx netty.InboundContext)
+	QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext)
+	QueryConfirmArrived(msg *codec.QueryConfirmMsgBody, ctx netty.InboundContext)
+	PingArrived(ctx netty.InboundContext)
 }
 
 func SetContextAttr(ctx netty.HandlerContext, key string, value interface{}) {
@@ -47,12 +61,12 @@ func (ConnectListener) Create(ctx netty.ActiveContext) {
 func (ConnectListener) Close(ctx netty.InactiveContext) {
 
 }
-func (ConnectListener) ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception)             {}
-func (ConnectListener) Connected(msg *codec.ConnectMessage, ctx netty.InboundContext)              {}
-func (ConnectListener) Diconnected(msg *codec.DisconnectMessage, ctx netty.InboundContext)         {}
-func (ConnectListener) PublishArrived(msg *codec.UserPublishMessage, ctx netty.InboundContext)     {}
-func (ConnectListener) PubAckArrived(msg *codec.ServerPublishAckMessage, ctx netty.InboundContext) {}
-func (ConnectListener) QueryArrived(msg *codec.QueryMessage, ctx netty.InboundContext)             {}
-func (ConnectListener) QueryConfirmArrived(msg *codec.QueryConfirmMessage, ctx netty.InboundContext) {
+func (ConnectListener) ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception)       {}
+func (ConnectListener) Connected(msg *codec.ConnectMsgBody, ctx netty.InboundContext)        {}
+func (ConnectListener) Diconnected(msg *codec.DisconnectMsgBody, ctx netty.InboundContext)   {}
+func (ConnectListener) PublishArrived(msg *codec.PublishMsgBody, ctx netty.InboundContext)   {}
+func (ConnectListener) PubAckArrived(msg *codec.PublishAckMsgBody, ctx netty.InboundContext) {}
+func (ConnectListener) QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext)       {}
+func (ConnectListener) QueryConfirmArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext) {
 }
-func (ConnectListener) PingArrived(msg *codec.PingMessage, ctx netty.InboundContext) {}
+func (ConnectListener) PingArrived(ctx netty.InboundContext) {}

@@ -20,19 +20,19 @@ func (handler IMMessageHandler) HandleRead(ctx netty.InboundContext, message net
 	if handler.listener != nil {
 		switch msg := message.(type) {
 		case *codec.ConnectMessage:
-			handler.listener.Connected(msg, ctx)
+			handler.listener.Connected(msg.MsgBody, ctx)
 		case *codec.DisconnectMessage:
-			handler.listener.Diconnected(msg, ctx)
+			handler.listener.Diconnected(msg.MsgBody, ctx)
 		case *codec.PingMessage:
-			handler.listener.PingArrived(msg, ctx)
+			handler.listener.PingArrived(ctx)
 		case *codec.UserPublishMessage:
-			handler.listener.PublishArrived(msg, ctx)
+			handler.listener.PublishArrived(msg.MsgBody, ctx)
 		case *codec.ServerPublishAckMessage:
-			handler.listener.PubAckArrived(msg, ctx)
+			handler.listener.PubAckArrived(msg.MsgBody, ctx)
 		case *codec.QueryMessage:
-			handler.listener.QueryArrived(msg, ctx)
+			handler.listener.QueryArrived(msg.MsgBody, ctx)
 		case *codec.QueryConfirmMessage:
-			handler.listener.QueryConfirmArrived(msg, ctx)
+			handler.listener.QueryConfirmArrived(msg.MsgBody, ctx)
 		default:
 			break
 		}
