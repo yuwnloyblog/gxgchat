@@ -52,21 +52,21 @@ func GetContextAttr(ctx netty.HandlerContext, key string) interface{} {
 	return nil
 }
 
-type ConnectListener struct{}
+type ImListenerImpl struct{}
 
-func (ConnectListener) Create(ctx netty.ActiveContext) {
+func (*ImListenerImpl) Create(ctx netty.ActiveContext) {
 	SetContextAttr(ctx, StateKey_ConnectSession, tools.GenerateUUIDShortString())
 	SetContextAttr(ctx, StateKey_ConnectCreateTime, time.Now().UnixMilli())
 }
-func (ConnectListener) Close(ctx netty.InactiveContext) {
+func (*ImListenerImpl) Close(ctx netty.InactiveContext) {
 
 }
-func (ConnectListener) ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception)       {}
-func (ConnectListener) Connected(msg *codec.ConnectMsgBody, ctx netty.InboundContext)        {}
-func (ConnectListener) Diconnected(msg *codec.DisconnectMsgBody, ctx netty.InboundContext)   {}
-func (ConnectListener) PublishArrived(msg *codec.PublishMsgBody, ctx netty.InboundContext)   {}
-func (ConnectListener) PubAckArrived(msg *codec.PublishAckMsgBody, ctx netty.InboundContext) {}
-func (ConnectListener) QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext)       {}
-func (ConnectListener) QueryConfirmArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext) {
+func (*ImListenerImpl) ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception)       {}
+func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, ctx netty.InboundContext)        {}
+func (*ImListenerImpl) Diconnected(msg *codec.DisconnectMsgBody, ctx netty.InboundContext)   {}
+func (*ImListenerImpl) PublishArrived(msg *codec.PublishMsgBody, ctx netty.InboundContext)   {}
+func (*ImListenerImpl) PubAckArrived(msg *codec.PublishAckMsgBody, ctx netty.InboundContext) {}
+func (*ImListenerImpl) QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext)       {}
+func (*ImListenerImpl) QueryConfirmArrived(msg *codec.QueryConfirmMsgBody, ctx netty.InboundContext) {
 }
-func (ConnectListener) PingArrived(ctx netty.InboundContext) {}
+func (*ImListenerImpl) PingArrived(ctx netty.InboundContext) {}

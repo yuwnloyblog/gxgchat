@@ -66,3 +66,19 @@ message QueryAckMsgBody{
 message QueryConfirmMsgBody{
     int32 index = 1;
 }
+
+message ImWebsocketMsg {
+    int32 version = 1;
+    int32 cmd = 2;
+    int32 qos  = 3;
+    oneof testof{
+        ConnectMsgBody connectMsgBody = 11;
+        ConnectAckMsgBody ConnectAckMsgBody = 12;
+        DisconnectMsgBody disconnectMsgBody = 13;
+        PublishMsgBody publishMsgBody = 14;
+        PublishAckMsgBody pubAckMsgBody = 15;
+        QueryMsgBody qryMsgBody = 16;
+        QueryAckMsgBody qryAckMsgBody = 17;
+        QueryConfirmMsgBody qryConfirmMsgBody = 18;
+    }
+}

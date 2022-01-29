@@ -17,7 +17,6 @@ func (*IMCodecHandler) CodecName() string {
 func (IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
 	reader := utils.MustToReader(message)
 	var imMsg IMessage
-
 	tmpBs := make([]byte, 1)
 	reader.Read(tmpBs)
 	version := tmpBs[0]
@@ -66,6 +65,8 @@ func (IMCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Messa
 				buf.Write(msgBody) //write msg body
 			}
 			ctx.HandleWrite(buf)
+		} else {
+			ctx.HandleWrite(message)
 		}
 	default:
 		fmt.Println(s)
