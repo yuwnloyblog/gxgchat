@@ -8,8 +8,10 @@ import (
 )
 
 type ImToken struct {
-	AppKey string
-	pbobjs.TokenValue
+	AppKey    string
+	UserId    string
+	DeviceId  string
+	TokenTime int64
 }
 
 func (t ImToken) ToTokenString(secureKey []byte) (string, error) {
@@ -28,10 +30,13 @@ func (t ImToken) ToTokenString(secureKey []byte) (string, error) {
 			}
 			tokenWrapBs, err := tools.PbMarshal(tokenWrap)
 			if err == nil {
-				// encoded := base64.StdEncoding.EncodeToString(strbytes)
 				bas64TokenStr := base64.StdEncoding.EncodeToString(tokenWrapBs)
 				return bas64TokenStr, nil
+			} else {
+				return "", err
 			}
+		} else {
+			return "", err
 		}
 	}
 	return "", err
@@ -62,14 +67,12 @@ func ParseToken(tokenWrap *pbobjs.TokenWrap, secureKey []byte) (ImToken, error) 
 		tokenValue := &pbobjs.TokenValue{}
 		err = tools.PbUnMarshal(tokenBs, tokenValue)
 		if err == nil {
-			token.TokenValue = *tokenValue
+			token.UserId = tokenValue.UserId
+			token.DeviceId = tokenValue.DeviceId
+			token.TokenTime = tokenValue.TokenTime
+		} else {
+			return token, err
 		}
 	}
 	return token, err
 }
-
-/*
-decoded, err := base64.StdEncoding.DecodeString(encoded)
-decodestr := string(decoded)
-fmt.Println(decodestr, err)
-*/
