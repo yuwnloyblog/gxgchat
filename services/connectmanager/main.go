@@ -6,6 +6,8 @@ import (
 
 	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/utils"
+	"github.com/yuwnloyblog/gxgchat/commons/caches"
+	"github.com/yuwnloyblog/gxgchat/commons/dbs"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
 )
 
@@ -36,6 +38,26 @@ int first = buf.readByte();
 */
 
 func main() {
+	dbs.Setup()
+
+	appInfo := caches.GetAppInfo("appkey")
+
+	fmt.Println(appInfo.AppSecureKey)
+	fmt.Println(appInfo.TestBool)
+	fmt.Println(appInfo.TestInt)
+	fmt.Println(appInfo.TestItem)
+	fmt.Println(appInfo.TestInt64)
+	// appInfo := &caches.AppInfo{}
+
+	// v := reflect.ValueOf(appInfo).Elem()
+	// for i := 0; i < v.NumField(); i++ {
+	// 	fmt.Println(v.Type().Field(i).Name, "\t")
+
+	// 	va, ok := v.Type().FieldByName("Appkey")
+	// 	if ok {
+	// 		fmt.Println("xxxxx:", va.Name)
+	// 	}
+	// }
 }
 
 func TestNetty() {
