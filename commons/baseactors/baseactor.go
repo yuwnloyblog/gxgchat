@@ -1,13 +1,23 @@
 package baseactors
 
 import (
-	"errors"
-
 	"github.com/yuwnloyblog/gmicro/actorsystem"
 	"github.com/yuwnloyblog/gxgchat/commons/baseactors/ssrequests"
 	"github.com/yuwnloyblog/gxgchat/commons/tools"
 	"google.golang.org/protobuf/proto"
 )
+
+func BaseProcessActor(actor actorsystem.IUntypedActor) actorsystem.IUntypedActor {
+	return &baseProcessActor{actor: actor}
+}
+
+type IContextHandler interface {
+	SetContext(ctx BaseContext)
+}
+
+type baseProcessActor struct {
+	actor actorsystem.IUntypedActor
+}
 
 type BaseActor struct {
 	actorsystem.UntypedActor
@@ -32,16 +42,20 @@ type BaseContext struct {
 	PublishType   int
 }
 
-func (actor *BaseActor) CreateInputObj() proto.Message {
+func (actor *BaseActor) SetContext(ctx BaseContext) {
+	actor.Context = ctx
+}
+
+func (actor *baseProcessActor) CreateInputObj() proto.Message {
 	return &ssrequests.SSRequest{}
 }
 
-func (actor *BaseActor) HandleInput(input, msg proto.Message) error {
+func (actor *baseProcessActor) OnReceive(input proto.Message) {
 	var err error
 	if input != nil {
 		ssRequest, ok := input.(*ssrequests.SSRequest)
 		if ok {
-			actor.Context = BaseContext{
+			ctx := BaseContext{
 				SequenceId:    int(ssRequest.SequenceId),
 				AppKey:        ssRequest.AppKey,
 				ClientOs:      ssRequest.ClientOs,
@@ -58,11 +72,41 @@ func (actor *BaseActor) HandleInput(input, msg proto.Message) error {
 				TerminalCount: int(ssRequest.TerminalCount),
 				PublishType:   int(ssRequest.PublishType),
 			}
+
+			ctxHandler, ok := actor.actor.(IContextHandler)
+			if ok {
+				ctxHandler.SetContext(ctx)
+			}
+
 			msgBytes := ssRequest.AppMessage
+			msg := actor.CreateInputObj()
 			err = tools.PbUnMarshal(msgBytes, msg)
-		} else {
-			err = errors.New("Not SSRequest!!!")
+			if err == nil {
+				receiveHandler, ok := actor.actor.(actorsystem.IReceiveHandler)
+				if ok {
+					receiveHandler.OnReceive(msg)
+				}
+			}
 		}
 	}
-	return err
+}
+
+func (actor *baseProcessActor) SetSender(sender actorsystem.ActorRef) {
+	senderHandler, ok := actor.actor.(actorsystem.ISenderHandler)
+	if ok {
+		senderHandler.SetSender(sender)
+	}
+}
+func (actor *baseProcessActor) SetSelf(self actorsystem.ActorRef) {
+	selfHandler, ok := actor.actor.(actorsystem.ISelfHandler)
+	if ok {
+		selfHandler.SetSelf(self)
+	}
+}
+
+func (actor *baseProcessActor) OnTimeout() {
+	timeoutHandler, ok := actor.actor.(actorsystem.ITimeoutHandler)
+	if ok {
+		timeoutHandler.OnTimeout()
+	}
 }

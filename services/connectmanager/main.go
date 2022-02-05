@@ -6,9 +6,11 @@ import (
 
 	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/utils"
-	"github.com/yuwnloyblog/gxgchat/commons/caches"
-	"github.com/yuwnloyblog/gxgchat/commons/dbs"
+	"github.com/yuwnloyblog/gmicro/actorsystem"
+	"github.com/yuwnloyblog/gxgchat/commons/baseactors"
+	"github.com/yuwnloyblog/gxgchat/commons/baseactors/ssrequests"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
+	"google.golang.org/protobuf/proto"
 )
 
 /*
@@ -37,27 +39,21 @@ int first = buf.readByte();
         }
 */
 
+type MyActor struct {
+}
+
+func (a *MyActor) OnReceive(msg proto.Message) {
+	fmt.Println("msg")
+}
+
 func main() {
-	dbs.Setup()
+	actor := baseactors.BaseProcessActor(&MyActor{})
 
-	appInfo := caches.GetAppInfo("appkey")
+	receive := actor.(actorsystem.IReceiveHandler)
 
-	fmt.Println(appInfo.AppSecureKey)
-	fmt.Println(appInfo.TestBool)
-	fmt.Println(appInfo.TestInt)
-	fmt.Println(appInfo.TestItem)
-	fmt.Println(appInfo.TestInt64)
-	// appInfo := &caches.AppInfo{}
+	msg := &ssrequests.SSRequest{}
 
-	// v := reflect.ValueOf(appInfo).Elem()
-	// for i := 0; i < v.NumField(); i++ {
-	// 	fmt.Println(v.Type().Field(i).Name, "\t")
-
-	// 	va, ok := v.Type().FieldByName("Appkey")
-	// 	if ok {
-	// 		fmt.Println("xxxxx:", va.Name)
-	// 	}
-	// }
+	receive.OnReceive(msg)
 }
 
 func TestNetty() {
