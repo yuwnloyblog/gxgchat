@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "./ssrequests";
+
+message SSRequest {
+    string appKey = 1;
+    int32 sequenceId = 2;
+    string clientOs = 3;
+    string deviceId = 4;
+    string clientAddr = 5;
+    string sdkVersion = 6;
+    int32 qos = 7;
+    string package = 8;
+    string sessionId = 9;
+    string method = 10;
+    string requestMethod = 11;
+    string requestId = 12;
+    string targetId = 13;
+    int32 terminalCount = 14;
+    int32 publishType = 15;
+
+
+
+    bytes appMessage = 51;
+}
