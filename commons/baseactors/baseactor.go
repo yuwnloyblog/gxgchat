@@ -8,7 +8,7 @@ import (
 )
 
 func BaseProcessActor(actor actorsystem.IUntypedActor) actorsystem.IUntypedActor {
-	return &baseProcessActor{actor: actor}
+	return &baseProcessActor{exeActor: actor}
 }
 
 type IContextHandler interface {
@@ -16,7 +16,7 @@ type IContextHandler interface {
 }
 
 type baseProcessActor struct {
-	actor actorsystem.IUntypedActor
+	exeActor actorsystem.IUntypedActor
 }
 
 type BaseActor struct {
@@ -73,7 +73,7 @@ func (actor *baseProcessActor) OnReceive(input proto.Message) {
 				PublishType:   int(ssRequest.PublishType),
 			}
 
-			ctxHandler, ok := actor.actor.(IContextHandler)
+			ctxHandler, ok := actor.exeActor.(IContextHandler)
 			if ok {
 				ctxHandler.SetContext(ctx)
 			}
@@ -82,7 +82,7 @@ func (actor *baseProcessActor) OnReceive(input proto.Message) {
 			msg := actor.CreateInputObj()
 			err = tools.PbUnMarshal(msgBytes, msg)
 			if err == nil {
-				receiveHandler, ok := actor.actor.(actorsystem.IReceiveHandler)
+				receiveHandler, ok := actor.exeActor.(actorsystem.IReceiveHandler)
 				if ok {
 					receiveHandler.OnReceive(msg)
 				}
@@ -92,20 +92,20 @@ func (actor *baseProcessActor) OnReceive(input proto.Message) {
 }
 
 func (actor *baseProcessActor) SetSender(sender actorsystem.ActorRef) {
-	senderHandler, ok := actor.actor.(actorsystem.ISenderHandler)
+	senderHandler, ok := actor.exeActor.(actorsystem.ISenderHandler)
 	if ok {
 		senderHandler.SetSender(sender)
 	}
 }
 func (actor *baseProcessActor) SetSelf(self actorsystem.ActorRef) {
-	selfHandler, ok := actor.actor.(actorsystem.ISelfHandler)
+	selfHandler, ok := actor.exeActor.(actorsystem.ISelfHandler)
 	if ok {
 		selfHandler.SetSelf(self)
 	}
 }
 
 func (actor *baseProcessActor) OnTimeout() {
-	timeoutHandler, ok := actor.actor.(actorsystem.ITimeoutHandler)
+	timeoutHandler, ok := actor.exeActor.(actorsystem.ITimeoutHandler)
 	if ok {
 		timeoutHandler.OnTimeout()
 	}
