@@ -10,6 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/yuwnloyblog/gxgchat/commons/configures"
 )
 
 var db *gorm.DB
@@ -17,16 +18,18 @@ var db *gorm.DB
 func GetDb() *gorm.DB {
 	return db
 }
-func Setup() {
+func InitMysql() error {
 	var err error
+
 	db, err = gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		"root",
-		"xiaoguang",
-		"127.0.0.1",
-		"im_db"))
+		configures.Config.Mysql.User,
+		configures.Config.Mysql.Password,
+		configures.Config.Mysql.Address,
+		configures.Config.Mysql.DbName))
 
 	if err != nil {
 		log.Fatalf("models.Setup err: %v", err)
+		return err
 	}
 
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
@@ -44,6 +47,7 @@ func Setup() {
 	db.DB().SetMaxIdleConns(20)
 	db.DB().SetMaxOpenConns(500)
 	db.DB().SetConnMaxLifetime(time.Second * 9) // mysql连接默认10s断开
+	return nil
 }
 
 // CloseDB closes database connection (unnecessary)
