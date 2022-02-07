@@ -7,8 +7,8 @@ import (
 	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/utils"
 	"github.com/yuwnloyblog/gmicro/actorsystem"
-	"github.com/yuwnloyblog/gxgchat/commons/baseactors"
-	"github.com/yuwnloyblog/gxgchat/commons/baseactors/ssrequests"
+	"github.com/yuwnloyblog/gxgchat/commons/clusters"
+	"github.com/yuwnloyblog/gxgchat/commons/clusters/ssrequests"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
 	"google.golang.org/protobuf/proto"
 )
@@ -47,7 +47,7 @@ func (a *MyActor) OnReceive(msg proto.Message) {
 }
 
 func main() {
-	actor := baseactors.BaseProcessActor(&MyActor{})
+	actor := clusters.BaseProcessActor(&MyActor{})
 
 	receive := actor.(actorsystem.IReceiveHandler)
 

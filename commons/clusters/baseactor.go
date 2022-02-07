@@ -1,8 +1,8 @@
-package baseactors
+package clusters
 
 import (
 	"github.com/yuwnloyblog/gmicro/actorsystem"
-	"github.com/yuwnloyblog/gxgchat/commons/baseactors/ssrequests"
+	"github.com/yuwnloyblog/gxgchat/commons/clusters/ssrequests"
 	"github.com/yuwnloyblog/gxgchat/commons/tools"
 	"google.golang.org/protobuf/proto"
 )

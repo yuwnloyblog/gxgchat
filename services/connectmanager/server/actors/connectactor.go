@@ -1,12 +1,12 @@
 package actors
 
 import (
-	"github.com/yuwnloyblog/gxgchat/commons/baseactors"
+	"github.com/yuwnloyblog/gxgchat/commons/clusters"
 	"google.golang.org/protobuf/proto"
 )
 
 type ConnectActor struct {
-	baseactors.BaseActor
+	clusters.BaseActor
 }
 
 func (actor *ConnectActor) OnReceive(input proto.Message) {
