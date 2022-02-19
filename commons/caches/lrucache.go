@@ -57,10 +57,11 @@ func (c *LruCache) AddTimeoutAfterCreate(timeout time.Duration) *LruCache {
 	c.addTimeoutChecker = time.NewTicker(time.Second)
 	go func() {
 		for task := range c.addTimeoutChecker.C {
-			if time.Now().UnixMilli()-task.UnixMilli() > 500 {
+			current := time.Now().UnixMilli()
+			if current-task.UnixMilli() > 500 {
 				continue
 			}
-			timeLine := task.UnixMilli() - int64(timeout)/(1000*1000)
+			timeLine := current - int64(timeout)/(1000*1000)
 			c.cleanOldestByCreateTime(timeLine)
 		}
 	}()
@@ -89,10 +90,11 @@ func (c *LruCache) AddTimeoutAfterRead(timeout time.Duration) *LruCache {
 	c.readTimeoutChecker = time.NewTicker(time.Second)
 	go func() {
 		for task := range c.readTimeoutChecker.C {
-			if time.Now().UnixMilli()-task.UnixMilli() > 500 {
+			current := time.Now().UnixMilli()
+			if current-task.UnixMilli() > 500 {
 				continue
 			}
-			timeLine := task.UnixMilli() - int64(timeout)/(1000*1000)
+			timeLine := current - int64(timeout)/(1000*1000)
 			c.cleanOdlestByReadTime(timeLine)
 		}
 	}()
