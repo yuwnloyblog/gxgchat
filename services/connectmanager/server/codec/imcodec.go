@@ -28,11 +28,23 @@ func (IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 		if msgHeader.MsgBodySize > 0 {
 			msgBodyBytes = make([]byte, msgHeader.MsgBodySize)
 			reader.Read(msgBodyBytes)
+
+			var obfuscationCode []byte
+			if msgHeader.GetCmd() == Cmd_Connect {
+				obfuscationCode = calObfuscationCode(msgBodyBytes)
+				SetContextAttr(ctx, StateKey_ObfuscationCode, obfuscationCode)
+			} else {
+				obfuscationCode = getObfuscationCodeFromCtx(ctx)
+			}
+			doObfuscation(obfuscationCode, msgBodyBytes)
 		} else {
 			msgBodyBytes = []byte{}
 		}
-
-		//validate checksum  TODO
+		//validate checksum
+		ok := msgHeader.ValidateChecksum(msgBodyBytes)
+		if !ok {
+			ctx.Close(fmt.Errorf("checksum failed"))
+		}
 		switch msgHeader.GetCmd() {
 		case Cmd_Connect:
 			imMsg = NewConnectMessage(msgHeader)
@@ -51,15 +63,10 @@ func (IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 		default:
 			return
 		}
-		var obfuscationCode []byte
-		if msgHeader.GetCmd() == Cmd_Connect {
-			obfuscationCode = calObfuscationCode(msgBodyBytes)
-			SetContextAttr(ctx, StateKey_ObfuscationCode, obfuscationCode)
-		} else {
-			obfuscationCode = getObfuscationCodeFromCtx(ctx)
+		err := imMsg.DecodeBody(msgBodyBytes)
+		if err != nil {
+			ctx.Close(err)
 		}
-		doObfuscation(obfuscationCode, msgBodyBytes)
-		imMsg.DecodeBody(msgBodyBytes)
 	}
 	ctx.HandleRead(imMsg)
 }
@@ -68,11 +75,11 @@ func (IMCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Messa
 	case IMessage:
 		msgBody, err := s.EncodeBody()
 		if err == nil {
-			obfuscationCode := getObfuscationCodeFromCtx(ctx)
-			doObfuscation(obfuscationCode, msgBody)
 			buf := bytes.NewBuffer([]byte{})
 			s.EncodeHeader(buf, msgBody) //encode header
 			if len(msgBody) > 0 {
+				obfuscationCode := getObfuscationCodeFromCtx(ctx)
+				doObfuscation(obfuscationCode, msgBody)
 				buf.Write(msgBody) //write msg body
 			}
 			ctx.HandleWrite(buf)

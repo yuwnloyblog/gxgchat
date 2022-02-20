@@ -110,6 +110,17 @@ func (msg *MsgHeader) calChecksum(bodyBytes []byte) {
 		msg.Checksum = msg.Checksum ^ b
 	}
 }
+func (msg *MsgHeader) ValidateChecksum(bodyBytes []byte) bool {
+	checksum := msg.HeaderCode
+	for _, b := range bodyBytes {
+		checksum = checksum ^ b
+	}
+	if checksum == msg.Checksum {
+		return true
+	} else {
+		return false
+	}
+}
 
 func MsgBodySize2Bytes(msgBodySize int) []byte {
 	buf := bytes.NewBuffer([]byte{})
