@@ -1,7 +1,6 @@
 package caches
 
 import (
-	"container/list"
 	"sync"
 	"time"
 
@@ -9,22 +8,16 @@ import (
 )
 
 type lruCacheItem struct {
-	value       interface{}
-	updatedTime int64
-}
-
-type keyItem struct {
-	key       interface{}
-	addedTime int64
+	value        interface{}
+	lastReadTime int64
+	addedTime    int64
 }
 
 type LruCache struct {
 	lru                simplelru.LRUCache
-	createdList        *list.List
-	createdMap         map[interface{}]*list.Element
 	lock               sync.RWMutex
 	readTimeoutChecker *time.Ticker
-	addTimeoutChecker  *time.Ticker
+	MaxLifeCycle       time.Duration
 	valueCreator       func(key interface{}) interface{}
 }
 
@@ -38,9 +31,7 @@ func NewLruCacheWithAddReadTimeout(size int, onEvict simplelru.EvictCallback, ti
 func NewLruCache(size int, onEvict simplelru.EvictCallback) *LruCache {
 	myLru, _ := simplelru.NewLRU(size, onEvict)
 	cache := &LruCache{
-		lru:         myLru,
-		createdList: list.New(),
-		createdMap:  make(map[interface{}]*list.Element),
+		lru: myLru,
 	}
 	return cache
 }
@@ -51,36 +42,8 @@ func (c *LruCache) AddValueCreator(creator func(interface{}) interface{}) *LruCa
 }
 
 func (c *LruCache) AddTimeoutAfterCreate(timeout time.Duration) *LruCache {
-	if c.addTimeoutChecker != nil {
-		c.addTimeoutChecker.Stop()
-	}
-	c.addTimeoutChecker = time.NewTicker(time.Second)
-	go func() {
-		for task := range c.addTimeoutChecker.C {
-			current := time.Now().UnixMilli()
-			if current-task.UnixMilli() > 500 {
-				continue
-			}
-			timeLine := current - int64(timeout)/(1000*1000)
-			c.cleanOldestByCreateTime(timeLine)
-		}
-	}()
+	c.MaxLifeCycle = timeout
 	return c
-}
-
-func (c *LruCache) cleanOldestByCreateTime(timeLine int64) {
-	for {
-		ent := c.createdList.Back()
-		if ent != nil {
-			keyItem := ent.Value.(*keyItem)
-			addedTime := keyItem.addedTime
-			if addedTime < timeLine {
-				c.Remove(keyItem.key)
-			} else {
-				break
-			}
-		}
-	}
 }
 
 func (c *LruCache) AddTimeoutAfterRead(timeout time.Duration) *LruCache {
@@ -105,8 +68,8 @@ func (c *LruCache) cleanOdlestByReadTime(timeLine int64) {
 	for {
 		itemKey, itemValue, ok := c.lru.GetOldest()
 		if ok {
-			updatedTime := itemValue.(lruCacheItem).updatedTime
-			if updatedTime < timeLine {
+			lastReadTime := itemValue.(lruCacheItem).lastReadTime
+			if lastReadTime < timeLine {
 				c.Remove(itemKey)
 			} else {
 				break
@@ -123,22 +86,10 @@ func (c *LruCache) Add(key, value interface{}) bool {
 
 func (c *LruCache) innerAdd(key, value interface{}) bool {
 	nowTime := time.Now().UnixMilli()
-
-	if ent, ok := c.createdMap[key]; ok {
-		c.createdList.MoveToFront(ent)
-		ent.Value.(*keyItem).addedTime = nowTime
-	} else {
-		ent := &keyItem{
-			addedTime: nowTime,
-			key:       key,
-		}
-		entry := c.createdList.PushFront(ent)
-		c.createdMap[key] = entry
-	}
-
 	return c.lru.Add(key, lruCacheItem{
-		value:       value,
-		updatedTime: nowTime,
+		value:        value,
+		lastReadTime: nowTime,
+		addedTime:    nowTime,
 	})
 }
 
@@ -151,7 +102,14 @@ func (c *LruCache) innerGet(key interface{}) (interface{}, bool) {
 	item, ok := c.lru.Get(key)
 	if ok {
 		cacheItem := item.(lruCacheItem)
-		cacheItem.updatedTime = time.Now().UnixMilli()
+		if c.MaxLifeCycle > 0 {
+			timeLine := time.Now().UnixMilli() - int64(c.MaxLifeCycle)/1000/1000
+			if cacheItem.addedTime < timeLine { //remove
+				c.lru.Remove(key)
+				return nil, false
+			}
+		}
+		cacheItem.lastReadTime = time.Now().UnixMilli()
 		return cacheItem.value, ok
 	} else {
 		return nil, ok
@@ -205,10 +163,6 @@ func (c *LruCache) Purge() {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	c.lru.Purge()
-	c.createdList.Init()
-	for k := range c.createdMap {
-		delete(c.createdMap, k)
-	}
 }
 func (c *LruCache) Len() int {
 	c.lock.Lock()
@@ -224,14 +178,6 @@ func (c *LruCache) ReSize(size int) int {
 func (c *LruCache) Remove(key interface{}) bool {
 	c.lock.Lock()
 	defer c.lock.Unlock()
-
-	//remove from keyMap
-	if ent, ok := c.createdMap[key]; ok {
-		c.createdList.Remove(ent)
-		keyItem := ent.Value.(*keyItem)
-		delete(c.createdMap, keyItem.key)
-	}
-
 	return c.lru.Remove(key)
 }
 
