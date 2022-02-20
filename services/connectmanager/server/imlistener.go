@@ -36,27 +36,11 @@ type ImListener interface {
 	PingArrived(ctx netty.InboundContext)
 }
 
-func SetContextAttr(ctx netty.HandlerContext, key string, value interface{}) {
-	attMap := make(map[string]interface{})
-	if ctx.Attachment() != nil {
-		attMap = ctx.Attachment().(map[string]interface{})
-	}
-	attMap[key] = value
-	ctx.SetAttachment(attMap)
-}
-func GetContextAttr(ctx netty.HandlerContext, key string) interface{} {
-	if ctx.Attachment() != nil {
-		attMap := ctx.Attachment().(map[string]interface{})
-		return attMap[key]
-	}
-	return nil
-}
-
 type ImListenerImpl struct{}
 
 func (*ImListenerImpl) Create(ctx netty.ActiveContext) {
-	SetContextAttr(ctx, StateKey_ConnectSession, tools.GenerateUUIDShortString())
-	SetContextAttr(ctx, StateKey_ConnectCreateTime, time.Now().UnixMilli())
+	codec.SetContextAttr(ctx, StateKey_ConnectSession, tools.GenerateUUIDShortString())
+	codec.SetContextAttr(ctx, StateKey_ConnectCreateTime, time.Now().UnixMilli())
 }
 func (*ImListenerImpl) Close(ctx netty.InactiveContext) {
 
