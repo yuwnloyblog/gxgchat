@@ -47,7 +47,7 @@ func (a *MyActor) OnReceive(msg proto.Message) {
 }
 
 func main() {
-	main_a()
+	//main_a()
 }
 
 func main_a() {

@@ -14,8 +14,8 @@ type IRegisterActorsHandler interface {
 type IStartupHandler interface {
 	Startup(args map[string]interface{})
 }
-type IShundownHandler interface {
-	Shundown()
+type IShutdownHandler interface {
+	Shutdown()
 }
 
 var serverList []IServiceStarter
@@ -40,11 +40,12 @@ func Startup() {
 	clusters.Cluster.StartUp()
 }
 
-func Shundown() {
+func Shutdown() {
+	//remove self from zk TODO
 	for _, server := range serverList {
 		//execute startup
-		if shundownHandler, ok := server.(IShundownHandler); ok {
-			shundownHandler.Shundown()
+		if shutdownHandler, ok := server.(IShutdownHandler); ok {
+			shutdownHandler.Shutdown()
 		}
 	}
 }

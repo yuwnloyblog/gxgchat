@@ -32,7 +32,7 @@ func (ser ConnectManager) Startup(args map[string]interface{}) {
 	go ser.wsServer.SyncStart(wsPort)
 }
 
-func (ser ConnectManager) Shundown() {
+func (ser ConnectManager) Shutdown() {
 	if ser.tcpServer != nil {
 		ser.tcpServer.Stop()
 	}

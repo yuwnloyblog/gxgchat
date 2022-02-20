@@ -45,3 +45,7 @@ func (cluster *ImCluster) StartUp() {
 		cluster.Cluster.StartUp()
 	}
 }
+
+func (cluster *ImCluster) Shutdown() {
+
+}
