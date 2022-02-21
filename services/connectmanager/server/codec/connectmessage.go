@@ -9,7 +9,19 @@ type ConnectMessage struct {
 	MsgBody *ConnectMsgBody
 }
 
-func NewConnectMessage(header *MsgHeader) *ConnectMessage {
+func NewConnectMessage(msgBody *ConnectMsgBody) *ConnectMessage {
+	msg := &ConnectMessage{
+		MsgHeader: MsgHeader{
+			Version: Version_0,
+		},
+		MsgBody: msgBody,
+	}
+	msg.SetCmd(Cmd_Connect)
+	msg.SetQoS(QoS_NeedAck)
+	return msg
+}
+
+func NewConnectMessageWithHeader(header *MsgHeader) *ConnectMessage {
 	msg := &ConnectMessage{
 		MsgHeader: MsgHeader{
 			Version:     Version_0,

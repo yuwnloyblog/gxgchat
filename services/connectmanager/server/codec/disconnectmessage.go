@@ -7,7 +7,7 @@ type DisconnectMessage struct {
 	MsgBody *DisconnectMsgBody
 }
 
-func NewDisconnectMessage(header *MsgHeader) *DisconnectMessage {
+func NewDisconnectMessageWithHeader(header *MsgHeader) *DisconnectMessage {
 	msg := &DisconnectMessage{
 		MsgHeader: MsgHeader{
 			Version:     Version_0,

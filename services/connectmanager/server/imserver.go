@@ -7,16 +7,16 @@ import (
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
 )
 
-type ImTcpServer struct {
+type ImServer struct {
 	MessageListener ImListener
 	bootstrap       netty.Bootstrap
 }
 
-func (server *ImTcpServer) SyncStart(port int) {
+func (server *ImServer) SyncStart(port int) {
 	childInitializer := func(channel netty.Channel) {
 		channel.Pipeline().
-			AddLast(codec.IMCodecHandler{}).
-			AddLast(IMMessageHandler{server.MessageListener})
+			AddLast(codec.ImCodecHandler{}).
+			AddLast(ImMessageHandler{server.MessageListener})
 	}
 
 	// new bootstrap
@@ -26,7 +26,7 @@ func (server *ImTcpServer) SyncStart(port int) {
 	server.bootstrap.Listen(fmt.Sprintf("0.0.0.0:%d", port)).Sync()
 }
 
-func (server *ImTcpServer) Stop() {
+func (server *ImServer) Stop() {
 	if server.bootstrap != nil {
 		server.bootstrap.Shutdown()
 	}

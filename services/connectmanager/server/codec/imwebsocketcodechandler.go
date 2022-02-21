@@ -11,7 +11,7 @@ import (
 
 type ImWebsocketCodecHandler struct{}
 
-func (*ImWebsocketCodecHandler) CodecName() string {
+func (ImWebsocketCodecHandler) CodecName() string {
 	return "im-websocket-codec"
 }
 

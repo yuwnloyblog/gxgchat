@@ -66,7 +66,7 @@ func TestNetty() {
 		channel.Pipeline().
 			// AddLast(frame.LengthFieldCodec(binary.LittleEndian, 1024, 0, 2, 0, 2)).
 			// AddLast(format.TextCodec()).
-			AddLast(codec.IMCodecHandler{}).
+			AddLast(codec.ImCodecHandler{}).
 			AddLast(EchoHandler{
 				role: "Server",
 			})
@@ -77,7 +77,7 @@ func TestNetty() {
 		channel.Pipeline().
 			// AddLast(frame.LengthFieldCodec(binary.LittleEndian, 1024, 0, 2, 0, 2)).
 			// AddLast(format.TextCodec()).
-			AddLast(codec.IMCodecHandler{}).
+			AddLast(codec.ImCodecHandler{}).
 			AddLast(EchoHandler{
 				role: "Client",
 				flag: true,
@@ -107,7 +107,7 @@ func (l EchoHandler) HandleActive(ctx netty.ActiveContext) {
 	if l.flag {
 		fmt.Println(l.role, "->", "active:", ctx.Channel().RemoteAddr())
 		msgHeader := &codec.MsgHeader{Version: codec.Version_0}
-		msg := codec.NewConnectMessage(msgHeader)
+		msg := codec.NewConnectMessageWithHeader(msgHeader)
 		msg.MsgBody = &codec.ConnectMsgBody{
 			ProtoId:  "protoId",
 			DeviceId: "deviceId",

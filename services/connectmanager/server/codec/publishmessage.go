@@ -7,10 +7,35 @@ type UserPublishMessage struct {
 	MsgBody *PublishMsgBody
 }
 type ServerPublishMessage struct {
-	UserPublishMessage
+	MsgHeader
+	MsgBody *PublishMsgBody
 }
 
-func NewUserPublishMessage(header *MsgHeader) *UserPublishMessage {
+func NewServerPublishMessageWithHeader(header *MsgHeader) *ServerPublishMessage {
+	msg := &ServerPublishMessage{
+		MsgHeader: MsgHeader{
+			Version:     Version_0,
+			HeaderCode:  header.HeaderCode,
+			Checksum:    header.Checksum,
+			MsgBodySize: header.MsgBodySize,
+		},
+	}
+	return msg
+}
+
+func (msg *ServerPublishMessage) EncodeBody() ([]byte, error) {
+	if msg.MsgBody != nil {
+		return tools.PbMarshal(msg.MsgBody)
+	}
+	return nil, &CodecError{"MsgBody's length is 0."}
+}
+
+func (msg *ServerPublishMessage) DecodeBody(msgBodyBytes []byte) error {
+	msg.MsgBody = &PublishMsgBody{}
+	return tools.PbUnMarshal(msgBodyBytes, msg.MsgBody)
+}
+
+func NewUserPublishMessageWithHeader(header *MsgHeader) *UserPublishMessage {
 	msg := &UserPublishMessage{
 		MsgHeader: MsgHeader{
 			Version:     Version_0,

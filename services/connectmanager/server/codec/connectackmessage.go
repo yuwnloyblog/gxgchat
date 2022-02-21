@@ -7,6 +7,20 @@ type ConnectAckMessage struct {
 	MsgBody *ConnectAckMsgBody
 }
 
+func NewConnectAckMessageWithHeader(header *MsgHeader) *ConnectMessage {
+	msg := &ConnectMessage{
+		MsgHeader: MsgHeader{
+			Version:     Version_0,
+			HeaderCode:  header.HeaderCode,
+			Checksum:    header.Checksum,
+			MsgBodySize: header.MsgBodySize,
+		},
+	}
+	msg.SetCmd(Cmd_Connect)
+	msg.SetQoS(QoS_NoAck)
+	return msg
+}
+
 func (msg *ConnectAckMessage) EncodeBody() ([]byte, error) {
 	if msg.MsgBody != nil {
 		return tools.PbMarshal(msg.MsgBody)

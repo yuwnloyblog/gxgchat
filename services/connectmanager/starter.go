@@ -10,19 +10,19 @@ import (
 )
 
 type ConnectManager struct {
-	tcpServer *server.ImTcpServer
+	tcpServer *server.ImServer
 	wsServer  *server.ImWebsocketServer
 }
 
-func (ser ConnectManager) RegisterActors(register gmicro.IActorRegister) {
+func (ser *ConnectManager) RegisterActors(register gmicro.IActorRegister) {
 	register.RegisterActor("connect", func() actorsystem.IUntypedActor {
 		return clusters.BaseProcessActor(&actors.ConnectActor{})
 	}, 64)
 }
-func (ser ConnectManager) Startup(args map[string]interface{}) {
+func (ser *ConnectManager) Startup(args map[string]interface{}) {
 	tcpPort := configures.Config.ConnectManager.TcpPort
 	wsPort := configures.Config.ConnectManager.WsPort
-	ser.tcpServer = &server.ImTcpServer{
+	ser.tcpServer = &server.ImServer{
 		MessageListener: &server.ImListenerImpl{},
 	}
 	go ser.tcpServer.SyncStart(tcpPort)
@@ -32,7 +32,7 @@ func (ser ConnectManager) Startup(args map[string]interface{}) {
 	go ser.wsServer.SyncStart(wsPort)
 }
 
-func (ser ConnectManager) Shutdown() {
+func (ser *ConnectManager) Shutdown() {
 	if ser.tcpServer != nil {
 		ser.tcpServer.Stop()
 	}

@@ -5,18 +5,18 @@ import (
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
 )
 
-type IMMessageHandler struct {
+type ImMessageHandler struct {
 	listener ImListener
 }
 
-func (handler IMMessageHandler) HandleActive(ctx netty.ActiveContext) {
+func (handler ImMessageHandler) HandleActive(ctx netty.ActiveContext) {
 	if handler.listener != nil {
 		handler.listener.Create(ctx)
 	}
 	ctx.HandleActive()
 }
 
-func (handler IMMessageHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
+func (handler ImMessageHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
 	if handler.listener != nil {
 		switch msg := message.(type) {
 		case *codec.ConnectMessage:
@@ -40,7 +40,7 @@ func (handler IMMessageHandler) HandleRead(ctx netty.InboundContext, message net
 	ctx.HandleRead(message)
 }
 
-func (handler IMMessageHandler) HandleInactive(ctx netty.InactiveContext, ex netty.Exception) {
+func (handler ImMessageHandler) HandleInactive(ctx netty.InactiveContext, ex netty.Exception) {
 	if handler.listener != nil {
 		handler.listener.Close(ctx)
 	}
@@ -48,7 +48,7 @@ func (handler IMMessageHandler) HandleInactive(ctx netty.InactiveContext, ex net
 	ctx.HandleInactive(ex)
 }
 
-func (handler IMMessageHandler) HandleException(ctx netty.ExceptionContext, ex netty.Exception) {
+func (handler ImMessageHandler) HandleException(ctx netty.ExceptionContext, ex netty.Exception) {
 	if handler.listener != nil {
 		handler.listener.ExceptionCaught(ctx, ex)
 	}

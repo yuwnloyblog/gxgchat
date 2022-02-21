@@ -7,6 +7,18 @@ type QueryAckMessage struct {
 	MsgBody *QueryAckMsgBody
 }
 
+func NewQueryAckMessageWithHeader(header *MsgHeader) *QueryAckMessage {
+	msg := &QueryAckMessage{
+		MsgHeader: MsgHeader{
+			Version:     Version_0,
+			HeaderCode:  header.HeaderCode,
+			Checksum:    header.Checksum,
+			MsgBodySize: header.MsgBodySize,
+		},
+	}
+	return msg
+}
+
 func (msg *QueryAckMessage) EncodeBody() ([]byte, error) {
 	if msg.MsgBody != nil {
 		return tools.PbMarshal(msg.MsgBody)

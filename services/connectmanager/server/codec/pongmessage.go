@@ -4,7 +4,7 @@ type PongMessage struct {
 	MsgHeader
 }
 
-func NewPongMessage(header *MsgHeader) *PongMessage {
+func NewPongMessageWithHeader(header *MsgHeader) *PongMessage {
 	msg := &PongMessage{
 		MsgHeader: MsgHeader{
 			Version:     Version_0,

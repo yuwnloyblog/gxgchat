@@ -7,7 +7,7 @@ type QueryMessage struct {
 	MsgBody *QueryMsgBody
 }
 
-func NewQueryMessage(header *MsgHeader) *QueryMessage {
+func NewQueryMessageWithHeader(header *MsgHeader) *QueryMessage {
 	msg := &QueryMessage{
 		MsgHeader: MsgHeader{
 			Version:     Version_0,

@@ -4,7 +4,7 @@ type PingMessage struct {
 	MsgHeader
 }
 
-func NewPingMessage(header *MsgHeader) *PingMessage {
+func NewPingMessageWithHeader(header *MsgHeader) *PingMessage {
 	msg := &PingMessage{
 		MsgHeader: MsgHeader{
 			Version:     Version_0,

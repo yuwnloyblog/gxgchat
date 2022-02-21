@@ -8,10 +8,35 @@ type ServerPublishAckMessage struct {
 }
 
 type UserPublishAckMessage struct {
-	ServerPublishAckMessage
+	MsgHeader
+	MsgBody *PublishAckMsgBody
 }
 
-func NewServerPublishAckMessage(header *MsgHeader) *ServerPublishAckMessage {
+func NewUserPublishAckMessageWithHeader(header *MsgHeader) *UserPublishAckMessage {
+	msg := &UserPublishAckMessage{
+		MsgHeader: MsgHeader{
+			Version:     Version_0,
+			HeaderCode:  header.HeaderCode,
+			Checksum:    header.Checksum,
+			MsgBodySize: header.MsgBodySize,
+		},
+	}
+	return msg
+}
+
+func (msg *UserPublishAckMessage) EncodeBody() ([]byte, error) {
+	if msg.MsgBody != nil {
+		return tools.PbMarshal(msg.MsgBody)
+	}
+	return nil, &CodecError{"MsgBody's length is 0."}
+}
+
+func (msg *UserPublishAckMessage) DecodeBody(msgBodyBytes []byte) error {
+	msg.MsgBody = &PublishAckMsgBody{}
+	return tools.PbUnMarshal(msgBodyBytes, msg.MsgBody)
+}
+
+func NewServerPublishAckMessageWithHeader(header *MsgHeader) *ServerPublishAckMessage {
 	msg := &ServerPublishAckMessage{
 		MsgHeader: MsgHeader{
 			Version:     Version_0,

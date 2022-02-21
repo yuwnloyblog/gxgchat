@@ -7,7 +7,7 @@ type QueryConfirmMessage struct {
 	MsgBody *QueryConfirmMsgBody
 }
 
-func NewQueryConfirmMessage(header *MsgHeader) *QueryConfirmMessage {
+func NewQueryConfirmMessageWithHeader(header *MsgHeader) *QueryConfirmMessage {
 	msg := &QueryConfirmMessage{
 		MsgHeader: MsgHeader{
 			Version:     Version_0,

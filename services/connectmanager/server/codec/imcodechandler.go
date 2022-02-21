@@ -9,13 +9,13 @@ import (
 	"github.com/yuwnloyblog/gxgchat/commons/tools"
 )
 
-type IMCodecHandler struct{}
+type ImCodecHandler struct{}
 
-func (*IMCodecHandler) CodecName() string {
+func (ImCodecHandler) CodecName() string {
 	return "im-codec"
 }
 
-func (IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
+func (ImCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
 	reader := utils.MustToReader(message)
 	var imMsg IMessage
 	tmpBs := make([]byte, 1)
@@ -29,14 +29,14 @@ func (IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 			msgBodyBytes = make([]byte, msgHeader.MsgBodySize)
 			reader.Read(msgBodyBytes)
 
-			var obfuscationCode []byte
+			var obfuscationCode [8]byte
 			if msgHeader.GetCmd() == Cmd_Connect {
 				obfuscationCode = calObfuscationCode(msgBodyBytes)
 				SetContextAttr(ctx, StateKey_ObfuscationCode, obfuscationCode)
 			} else {
 				obfuscationCode = getObfuscationCodeFromCtx(ctx)
 			}
-			doObfuscation(obfuscationCode, msgBodyBytes)
+			DoObfuscation(obfuscationCode, msgBodyBytes)
 		} else {
 			msgBodyBytes = []byte{}
 		}
@@ -47,19 +47,19 @@ func (IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 		}
 		switch msgHeader.GetCmd() {
 		case Cmd_Connect:
-			imMsg = NewConnectMessage(msgHeader)
+			imMsg = NewConnectMessageWithHeader(msgHeader)
 		case Cmd_Disconnect:
-			imMsg = NewDisconnectMessage(msgHeader)
+			imMsg = NewDisconnectMessageWithHeader(msgHeader)
 		case Cmd_Ping:
-			imMsg = NewPingMessage(msgHeader)
+			imMsg = NewPingMessageWithHeader(msgHeader)
 		case Cmd_Publish:
-			imMsg = NewUserPublishMessage(msgHeader)
+			imMsg = NewUserPublishMessageWithHeader(msgHeader)
 		case Cmd_PublishAck:
-			imMsg = NewServerPublishAckMessage(msgHeader)
+			imMsg = NewServerPublishAckMessageWithHeader(msgHeader)
 		case Cmd_Query:
-			imMsg = NewQueryMessage(msgHeader)
+			imMsg = NewQueryMessageWithHeader(msgHeader)
 		case Cmd_QueryConfirm:
-			imMsg = NewQueryConfirmMessage(msgHeader)
+			imMsg = NewQueryConfirmMessageWithHeader(msgHeader)
 		default:
 			return
 		}
@@ -70,7 +70,7 @@ func (IMCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 	}
 	ctx.HandleRead(imMsg)
 }
-func (IMCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Message) {
+func (ImCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Message) {
 	switch s := message.(type) {
 	case IMessage:
 		msgBody, err := s.EncodeBody()
@@ -79,7 +79,7 @@ func (IMCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Messa
 			s.EncodeHeader(buf, msgBody) //encode header
 			if len(msgBody) > 0 {
 				obfuscationCode := getObfuscationCodeFromCtx(ctx)
-				doObfuscation(obfuscationCode, msgBody)
+				DoObfuscation(obfuscationCode, msgBody)
 				buf.Write(msgBody) //write msg body
 			}
 			ctx.HandleWrite(buf)
@@ -87,18 +87,17 @@ func (IMCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Messa
 			ctx.HandleWrite(message)
 		}
 	default:
-		fmt.Println(s)
 		ctx.HandleWrite(message)
 	}
 }
 
-func getObfuscationCodeFromCtx(ctx netty.HandlerContext) []byte {
+func getObfuscationCodeFromCtx(ctx netty.HandlerContext) [8]byte {
 	obfuscationCodeObj := GetContextAttr(ctx, StateKey_ObfuscationCode)
 	if obfuscationCodeObj != nil {
-		obfuscationCode := obfuscationCodeObj.([]byte)
+		obfuscationCode := obfuscationCodeObj.([8]byte)
 		return obfuscationCode
 	}
-	return []byte{}
+	return [8]byte{0, 0, 0, 0, 0, 0, 0, 0}
 }
 
 var StateKey_ObfuscationCode string = "state.connect_session"
@@ -125,7 +124,7 @@ var fixedConnMsgBytes []byte
 func getFixedConnMsgBytes() []byte {
 	if len(fixedConnMsgBytes) != 8 {
 		connMsg := &ConnectMsgBody{
-			ProtoId: "IamGxg",
+			ProtoId: ProtoId,
 		}
 		bs, err := tools.PbMarshal(connMsg)
 		if err == nil {
@@ -134,25 +133,20 @@ func getFixedConnMsgBytes() []byte {
 	}
 	return fixedConnMsgBytes
 }
-func calObfuscationCode(connectData []byte) []byte {
+func calObfuscationCode(connectData []byte) [8]byte {
 	fixedConnBytes := getFixedConnMsgBytes()
+	code := [8]byte{0, 0, 0, 0, 0, 0, 0, 0}
 	if len(connectData) > 8 && len(fixedConnBytes) == 8 {
-		code := make([]byte, 8)
 		for i := 0; i < 8; i++ {
 			code[i] = connectData[i] ^ fixedConnBytes[i]
 		}
-		return code
 	}
-	return []byte{}
+	return code
 }
 
-func doObfuscation(code, data []byte) {
+func DoObfuscation(code [8]byte, data []byte) {
 	dataLen := len(data)
-	if dataLen > 0 && len(code) == 8 {
-		for i := 0; i < dataLen; i += 8 {
-			for j := 0; (j < 8) && (i+j < dataLen); j++ {
-				data[i+j] = data[i+j] ^ code[j]
-			}
-		}
+	for i := 0; i < dataLen; i++ {
+		data[i] = data[i] ^ code[i%8]
 	}
 }

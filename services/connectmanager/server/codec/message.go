@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	Version_0 byte = byte(0)
+	Version_0 byte   = byte(0)
+	ProtoId   string = "IamGxg"
 
 	QoS_NoAck   int = 0
 	QoS_NeedAck int = 1
