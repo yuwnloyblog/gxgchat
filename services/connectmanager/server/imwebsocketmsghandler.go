@@ -18,7 +18,7 @@ func (handler IMWebsocketMsgHandler) HandleActive(ctx netty.ActiveContext) {
 
 func (handler IMWebsocketMsgHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
 	if handler.listener != nil {
-		wsMsg, ok := message.(codec.ImWebsocketMsg)
+		wsMsg, ok := message.(*codec.ImWebsocketMsg)
 		if ok {
 			switch wsMsg.Cmd {
 			case int32(codec.Cmd_Connect):
