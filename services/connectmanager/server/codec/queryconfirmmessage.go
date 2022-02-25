@@ -10,7 +10,7 @@ type QueryConfirmMessage struct {
 func NewQueryConfirmMessageWithHeader(header *MsgHeader) *QueryConfirmMessage {
 	msg := &QueryConfirmMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,

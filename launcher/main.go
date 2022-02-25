@@ -32,7 +32,7 @@ func main() {
 		return
 	}
 
-	imstarters.Loaded(connectmanager.ConnectManager{})
+	imstarters.Loaded(&connectmanager.ConnectManager{})
 	imstarters.Startup()
 
 	waitgroup.Wait()

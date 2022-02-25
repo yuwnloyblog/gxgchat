@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/go-netty/go-netty"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
 )
@@ -13,7 +15,8 @@ func (handler ImMessageHandler) HandleActive(ctx netty.ActiveContext) {
 	if handler.listener != nil {
 		handler.listener.Create(ctx)
 	}
-	ctx.HandleActive()
+	fmt.Println("active")
+	//ctx.HandleActive()
 }
 
 func (handler ImMessageHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
@@ -26,7 +29,7 @@ func (handler ImMessageHandler) HandleRead(ctx netty.InboundContext, message net
 		case *codec.PingMessage:
 			handler.listener.PingArrived(ctx)
 		case *codec.UserPublishMessage:
-			handler.listener.PublishArrived(msg.MsgBody, ctx)
+			handler.listener.PublishArrived(msg.MsgBody, msg.GetQoS(), ctx)
 		case *codec.ServerPublishAckMessage:
 			handler.listener.PubAckArrived(msg.MsgBody, ctx)
 		case *codec.QueryMessage:
@@ -37,21 +40,23 @@ func (handler ImMessageHandler) HandleRead(ctx netty.InboundContext, message net
 			break
 		}
 	}
-	ctx.HandleRead(message)
+	//ctx.HandleRead(message)
 }
 
 func (handler ImMessageHandler) HandleInactive(ctx netty.InactiveContext, ex netty.Exception) {
 	if handler.listener != nil {
 		handler.listener.Close(ctx)
 	}
+	fmt.Println("inactive", ex)
 	ctx.Close(ex)
-	ctx.HandleInactive(ex)
+	//ctx.HandleInactive(ex)
 }
 
 func (handler ImMessageHandler) HandleException(ctx netty.ExceptionContext, ex netty.Exception) {
 	if handler.listener != nil {
 		handler.listener.ExceptionCaught(ctx, ex)
 	}
+	fmt.Println("exception")
 	ctx.Close(ex)
-	ctx.HandleException(ex)
+	//ctx.HandleException(ex)
 }

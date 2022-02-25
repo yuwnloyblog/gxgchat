@@ -7,10 +7,21 @@ type DisconnectMessage struct {
 	MsgBody *DisconnectMsgBody
 }
 
+func NewDisconnectMessage(msgBody *DisconnectMsgBody) *DisconnectMessage {
+	msg := &DisconnectMessage{
+		MsgHeader: MsgHeader{
+			Version: Version_1,
+		},
+		MsgBody: msgBody,
+	}
+	msg.SetCmd(Cmd_Disconnect)
+	msg.SetQoS(QoS_NoAck)
+	return msg
+}
 func NewDisconnectMessageWithHeader(header *MsgHeader) *DisconnectMessage {
 	msg := &DisconnectMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,

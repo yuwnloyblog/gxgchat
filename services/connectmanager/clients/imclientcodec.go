@@ -8,6 +8,7 @@ import (
 	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/utils"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
+	connUtils "github.com/yuwnloyblog/gxgchat/services/connectmanager/server/utils"
 )
 
 type ImClientCodecHandler struct{}
@@ -22,8 +23,8 @@ func (ImClientCodecHandler) HandleRead(ctx netty.InboundContext, message netty.M
 	tmpBs := make([]byte, 1)
 	reader.Read(tmpBs)
 	version := tmpBs[0]
-	if version == codec.Version_0 {
-		msgHeader := &codec.MsgHeader{Version: codec.Version_0}
+	if version == codec.Version_1 {
+		msgHeader := &codec.MsgHeader{Version: codec.Version_1}
 		msgHeader.DecodeHeader(reader)
 		var msgBodyBytes []byte
 		if msgHeader.MsgBodySize > 0 {
@@ -84,11 +85,11 @@ func (ImClientCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty
 }
 
 func getObfuscationCodeFromCtx(ctx netty.HandlerContext) [8]byte {
-	obfuscationCodeObj := codec.GetContextAttr(ctx, codec.StateKey_ObfuscationCode)
+	obfuscationCodeObj := connUtils.GetContextAttr(ctx, connUtils.StateKey_ObfuscationCode)
 	obfuscationCode := [8]byte{0, 0, 0, 0, 0, 0, 0, 0}
 	if obfuscationCodeObj == nil {
 		obfuscationCode = randomObfuscationCode()
-		codec.SetContextAttr(ctx, codec.StateKey_ObfuscationCode, obfuscationCode)
+		connUtils.SetContextAttr(ctx, connUtils.StateKey_ObfuscationCode, obfuscationCode)
 	} else {
 		obfuscationCode = obfuscationCodeObj.([8]byte)
 	}

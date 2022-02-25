@@ -1,36 +1,32 @@
 package clients
 
 import (
-	"fmt"
-
 	"github.com/go-netty/go-netty"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
 )
 
 type ImClientMessageHandler struct {
+	Client *ImClient
 }
 
 func (handler ImClientMessageHandler) HandleActive(ctx netty.ActiveContext) {
-
 	ctx.HandleActive()
 }
 
 func (handler ImClientMessageHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
 	switch msg := message.(type) {
 	case *codec.ConnectAckMessage:
-		fmt.Println(msg.MsgBody)
+		handler.Client.OnConnectAck(msg)
 	case *codec.DisconnectMessage:
-
+		handler.Client.OnDisconnect(msg)
 	case *codec.PongMessage:
-
-	case *codec.UserPublishMessage:
-
-	case *codec.ServerPublishAckMessage:
-
-	case *codec.QueryMessage:
-
-	case *codec.QueryConfirmMessage:
-
+		handler.Client.OnPong(msg)
+	case *codec.UserPublishAckMessage:
+		handler.Client.OnPublishAck(msg)
+	case *codec.ServerPublishMessage:
+		handler.Client.OnPublish(msg)
+	case *codec.QueryAckMessage:
+		handler.Client.OnQueryAck(msg)
 	default:
 		break
 	}
@@ -39,13 +35,13 @@ func (handler ImClientMessageHandler) HandleRead(ctx netty.InboundContext, messa
 }
 
 func (handler ImClientMessageHandler) HandleInactive(ctx netty.InactiveContext, ex netty.Exception) {
-
+	handler.Client.OnInactive(ex)
 	ctx.Close(ex)
 	ctx.HandleInactive(ex)
 }
 
 func (handler ImClientMessageHandler) HandleException(ctx netty.ExceptionContext, ex netty.Exception) {
-
+	handler.Client.OnException(ex)
 	ctx.Close(ex)
 	ctx.HandleException(ex)
 }

@@ -30,6 +30,7 @@ func (server *ImWebsocketServer) SyncStart(port int) {
 	setupCodec := func(channel netty.Channel) {
 		channel.Pipeline().
 			AddLast(frame.PacketCodec(65536 * 4)).
+			AddLast(codec.NewReadTimeoutHandler(300 * time.Second)).
 			AddLast(codec.ImWebsocketCodecHandler{}).
 			AddLast(IMWebsocketMsgHandler{server.MessageListener})
 	}

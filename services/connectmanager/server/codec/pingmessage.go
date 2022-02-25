@@ -4,10 +4,20 @@ type PingMessage struct {
 	MsgHeader
 }
 
+func NewPingMessage() *PingMessage {
+	msg := &PingMessage{
+		MsgHeader: MsgHeader{
+			Version: Version_1,
+		},
+	}
+	msg.SetCmd(Cmd_Ping)
+	msg.SetQoS(QoS_NeedAck)
+	return msg
+}
 func NewPingMessageWithHeader(header *MsgHeader) *PingMessage {
 	msg := &PingMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,

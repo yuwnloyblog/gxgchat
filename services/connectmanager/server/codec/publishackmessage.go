@@ -12,10 +12,33 @@ type UserPublishAckMessage struct {
 	MsgBody *PublishAckMsgBody
 }
 
+func NewServerPublishAckMessage(msgBody *PublishAckMsgBody) *ServerPublishAckMessage {
+	msg := &ServerPublishAckMessage{
+		MsgHeader: MsgHeader{
+			Version: Version_1,
+		},
+		MsgBody: msgBody,
+	}
+	msg.SetCmd(Cmd_PublishAck)
+	msg.SetQoS(QoS_NoAck)
+	return msg
+}
+func NewUserPublishAckMessage(msgBody *PublishAckMsgBody) *UserPublishAckMessage {
+	msg := &UserPublishAckMessage{
+		MsgHeader: MsgHeader{
+			Version: Version_1,
+		},
+		MsgBody: msgBody,
+	}
+	msg.SetCmd(Cmd_PublishAck)
+	msg.SetQoS(QoS_NoAck)
+	return msg
+}
+
 func NewUserPublishAckMessageWithHeader(header *MsgHeader) *UserPublishAckMessage {
 	msg := &UserPublishAckMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,
@@ -39,7 +62,7 @@ func (msg *UserPublishAckMessage) DecodeBody(msgBodyBytes []byte) error {
 func NewServerPublishAckMessageWithHeader(header *MsgHeader) *ServerPublishAckMessage {
 	msg := &ServerPublishAckMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,

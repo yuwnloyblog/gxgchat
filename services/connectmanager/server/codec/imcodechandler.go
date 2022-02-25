@@ -7,6 +7,7 @@ import (
 	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/utils"
 	"github.com/yuwnloyblog/gxgchat/commons/tools"
+	connUtils "github.com/yuwnloyblog/gxgchat/services/connectmanager/server/utils"
 )
 
 type ImCodecHandler struct{}
@@ -21,8 +22,8 @@ func (ImCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 	tmpBs := make([]byte, 1)
 	reader.Read(tmpBs)
 	version := tmpBs[0]
-	if version == Version_0 {
-		msgHeader := &MsgHeader{Version: Version_0}
+	if version == Version_1 {
+		msgHeader := &MsgHeader{Version: Version_1}
 		msgHeader.DecodeHeader(reader)
 		var msgBodyBytes []byte
 		if msgHeader.MsgBodySize > 0 {
@@ -32,7 +33,7 @@ func (ImCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 			var obfuscationCode [8]byte
 			if msgHeader.GetCmd() == Cmd_Connect {
 				obfuscationCode = calObfuscationCode(msgBodyBytes)
-				SetContextAttr(ctx, StateKey_ObfuscationCode, obfuscationCode)
+				connUtils.SetContextAttr(ctx, connUtils.StateKey_ObfuscationCode, obfuscationCode)
 			} else {
 				obfuscationCode = getObfuscationCodeFromCtx(ctx)
 			}
@@ -67,6 +68,8 @@ func (ImCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 		if err != nil {
 			ctx.Close(err)
 		}
+	} else {
+		panic(fmt.Errorf("wrong proto received"))
 	}
 	ctx.HandleRead(imMsg)
 }
@@ -92,31 +95,12 @@ func (ImCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Messa
 }
 
 func getObfuscationCodeFromCtx(ctx netty.HandlerContext) [8]byte {
-	obfuscationCodeObj := GetContextAttr(ctx, StateKey_ObfuscationCode)
+	obfuscationCodeObj := connUtils.GetContextAttr(ctx, connUtils.StateKey_ObfuscationCode)
 	if obfuscationCodeObj != nil {
 		obfuscationCode := obfuscationCodeObj.([8]byte)
 		return obfuscationCode
 	}
 	return [8]byte{0, 0, 0, 0, 0, 0, 0, 0}
-}
-
-var StateKey_ObfuscationCode string = "state.connect_session"
-
-func SetContextAttr(ctx netty.HandlerContext, key string, value interface{}) {
-	if ctx.Attachment() == nil {
-		attMap := make(map[string]interface{})
-		ctx.SetAttachment(attMap)
-	}
-	attMap := ctx.Attachment().(map[string]interface{})
-	attMap[key] = value
-	ctx.SetAttachment(attMap)
-}
-func GetContextAttr(ctx netty.HandlerContext, key string) interface{} {
-	if ctx.Attachment() != nil {
-		attMap := ctx.Attachment().(map[string]interface{})
-		return attMap[key]
-	}
-	return nil
 }
 
 var fixedConnMsgBytes []byte

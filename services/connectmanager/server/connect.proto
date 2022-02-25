@@ -5,12 +5,12 @@ option go_package = "./codec";
 message ConnectMsgBody{
     string protoId = 1;
     string sdkVersion = 2; //sdk 版本
-    string appId = 3;
+    string appkey = 3;
     string token = 4;
 
     //设备信息
     string deviceId = 5;
-    string plantId = 6;//iOS/Android/iPad
+    string platform = 6;//iOS/Android/iPad
     string deviceCompany = 7;//设备厂商, huawei/apple
     string deviceModel = 8;//设备型号  例如: iPhone8
     string deviceOsVersion = 9;//手机操作系统版本

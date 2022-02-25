@@ -1,26 +1,16 @@
 package server
 
 import (
+	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/go-netty/go-netty"
+	"github.com/yuwnloyblog/gxgchat/commons/logs"
 	"github.com/yuwnloyblog/gxgchat/commons/tools"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
+	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/utils"
 )
-
-// type ImListener interface {
-// 	Create(ctx netty.ActiveContext)
-// 	Close(ctx netty.InactiveContext)
-// 	ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception)
-
-// 	Connected(msg *codec.ConnectMessage, ctx netty.InboundContext)
-// 	Diconnected(msg *codec.DisconnectMessage, ctx netty.InboundContext)
-// 	PublishArrived(msg *codec.UserPublishMessage, ctx netty.InboundContext)
-// 	PubAckArrived(msg *codec.ServerPublishAckMessage, ctx netty.InboundContext)
-// 	QueryArrived(msg *codec.QueryMessage, ctx netty.InboundContext)
-// 	QueryConfirmArrived(msg *codec.QueryConfirmMessage, ctx netty.InboundContext)
-// 	PingArrived(msg *codec.PingMessage, ctx netty.InboundContext)
-// }
 
 type ImListener interface {
 	Create(ctx netty.ActiveContext)
@@ -29,7 +19,7 @@ type ImListener interface {
 
 	Connected(msg *codec.ConnectMsgBody, ctx netty.InboundContext)
 	Diconnected(msg *codec.DisconnectMsgBody, ctx netty.InboundContext)
-	PublishArrived(msg *codec.PublishMsgBody, ctx netty.InboundContext)
+	PublishArrived(msg *codec.PublishMsgBody, qos int, ctx netty.InboundContext)
 	PubAckArrived(msg *codec.PublishAckMsgBody, ctx netty.InboundContext)
 	QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext)
 	QueryConfirmArrived(msg *codec.QueryConfirmMsgBody, ctx netty.InboundContext)
@@ -39,18 +29,78 @@ type ImListener interface {
 type ImListenerImpl struct{}
 
 func (*ImListenerImpl) Create(ctx netty.ActiveContext) {
-	codec.SetContextAttr(ctx, StateKey_ConnectSession, tools.GenerateUUIDShortString())
-	codec.SetContextAttr(ctx, StateKey_ConnectCreateTime, time.Now().UnixMilli())
+	utils.SetContextAttr(ctx, utils.StateKey_ConnectSession, tools.GenerateUUIDShortString())
+	utils.SetContextAttr(ctx, utils.StateKey_ConnectCreateTime, time.Now().UnixMilli())
 }
 func (*ImListenerImpl) Close(ctx netty.InactiveContext) {
+}
+func (*ImListenerImpl) ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception) {}
+func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, ctx netty.InboundContext) {
+	userId := msg.Token
+	clientIp := msg.ClientIp
+	if clientIp == "" {
+		clientIp = ctx.Channel().RemoteAddr()
+	}
+	//check something
 
+	//success
+	logs.Info(utils.GetConnSession(ctx), utils.Action_Connect, msg.Appkey, userId, msg.SdkVersion, msg.DeviceId, msg.Platform, msg.DeviceCompany, msg.DeviceModel, msg.DeviceOsVersion, msg.NetworkId, msg.IspNum, clientIp)
+	PutInContextCache(ctx)
+	msgAck := codec.NewConnectAckMessage(&codec.ConnectAckMsgBody{
+		Code:      utils.ConnectAckState_Access,
+		UserId:    msg.Token,
+		Session:   utils.GetContextAttrString(ctx, utils.StateKey_ConnectSession),
+		Timestamp: time.Now().UnixMilli(),
+	})
+	utils.SetContextAttr(ctx, utils.StateKey_Appkey, msg.Appkey)
+	utils.SetContextAttr(ctx, utils.StateKey_UserID, userId)
+	utils.SetContextAttr(ctx, utils.StateKey_Platform, msg.Platform)
+	utils.SetContextAttr(ctx, utils.StateKey_Version, msg.SdkVersion)
+	utils.SetContextAttr(ctx, utils.StateKey_ClientIp, clientIp)
+	ctx.Channel().Write(msgAck)
 }
-func (*ImListenerImpl) ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception)       {}
-func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, ctx netty.InboundContext)        {}
-func (*ImListenerImpl) Diconnected(msg *codec.DisconnectMsgBody, ctx netty.InboundContext)   {}
-func (*ImListenerImpl) PublishArrived(msg *codec.PublishMsgBody, ctx netty.InboundContext)   {}
-func (*ImListenerImpl) PubAckArrived(msg *codec.PublishAckMsgBody, ctx netty.InboundContext) {}
-func (*ImListenerImpl) QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext)       {}
+func (*ImListenerImpl) Diconnected(msg *codec.DisconnectMsgBody, ctx netty.InboundContext) {
+	logs.Info(utils.GetConnSession(ctx), utils.Action_Disconnect, msg.Code)
+	ctx.Close(fmt.Errorf("dissconnect"))
+	RemoveFromContextCache(ctx)
+}
+func (*ImListenerImpl) PublishArrived(msg *codec.PublishMsgBody, qos int, ctx netty.InboundContext) {
+	logs.Info(utils.GetConnSession(ctx), utils.Action_UserPub, msg.Index, msg.Topic, msg.TargetId, len(msg.Data))
+	if qos == codec.QoS_NeedAck {
+		//Debug
+		ctx.Channel().Write(codec.NewUserPublishAckMessage(&codec.PublishAckMsgBody{
+			Index:     msg.Index,
+			Code:      0,
+			MsgId:     "test-msg-id",
+			Timestamp: time.Now().UnixMilli(),
+		}))
+	}
+	logs.Info(utils.GetConnSession(ctx), utils.Action_UserPubAck, msg.Index, 0)
+}
+func (*ImListenerImpl) PubAckArrived(msg *codec.PublishAckMsgBody, ctx netty.InboundContext) {
+	logs.Info(utils.GetConnSession(ctx), utils.Action_ServerPubAck, msg.Index)
+}
+func (*ImListenerImpl) QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext) {
+	logs.Info(utils.GetConnSession(ctx), utils.Action_Query, msg.Index, msg.Topic, msg.TargetId, len(msg.Data))
+
+	qos := codec.QoS_NoAck
+	r := rand.Intn(2)
+	if r == 1 {
+		qos = codec.QoS_NeedAck
+	}
+	//Debug
+	retData := []byte{1, 2, 3}
+	ctx.Write(codec.NewQueryAckMessage(&codec.QueryAckMsgBody{
+		Index:     msg.Index,
+		Code:      0,
+		Timestamp: time.Now().UnixMilli(),
+		Data:      retData,
+	}, qos))
+	logs.Info(utils.GetConnSession(ctx), utils.Action_QueryAck, msg.Index, 0, len(retData))
+}
 func (*ImListenerImpl) QueryConfirmArrived(msg *codec.QueryConfirmMsgBody, ctx netty.InboundContext) {
+	logs.Info(utils.GetConnSession(ctx), utils.Action_QueryConfirm, msg.Index)
 }
-func (*ImListenerImpl) PingArrived(ctx netty.InboundContext) {}
+func (*ImListenerImpl) PingArrived(ctx netty.InboundContext) {
+	ctx.Write(codec.NewPonMessage())
+}

@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
+	"encoding/binary"
 	"fmt"
-	"time"
 
 	"github.com/go-netty/go-netty"
-	"github.com/go-netty/go-netty/utils"
+	"github.com/go-netty/go-netty/codec/format"
+	"github.com/go-netty/go-netty/codec/frame"
 	"github.com/yuwnloyblog/gmicro/actorsystem"
 	"github.com/yuwnloyblog/gxgchat/commons/clusters"
 	"github.com/yuwnloyblog/gxgchat/commons/clusters/ssrequests"
@@ -47,7 +49,16 @@ func (a *MyActor) OnReceive(msg proto.Message) {
 }
 
 func main() {
-	//main_a()
+	// TestNetty()
+	len := 0
+
+	bs := codec.MsgBodySize2Bytes(len)
+
+	fmt.Println(bs)
+
+	reader := bytes.NewReader(bs)
+	ret := codec.Bytes2MsgBodySize(reader)
+	fmt.Println(ret)
 }
 
 func main_a() {
@@ -64,12 +75,12 @@ func TestNetty() {
 	// setup child pipeline initializer.
 	childInitializer := func(channel netty.Channel) {
 		channel.Pipeline().
-			// AddLast(frame.LengthFieldCodec(binary.LittleEndian, 1024, 0, 2, 0, 2)).
-			// AddLast(format.TextCodec()).
-			AddLast(codec.ImCodecHandler{}).
-			AddLast(EchoHandler{
-				role: "Server",
-			})
+			AddLast(frame.LengthFieldCodec(binary.LittleEndian, 1024, 0, 2, 0, 2)).
+			AddLast(format.TextCodec())
+		// AddLast(codec.ImCodecHandler{}).
+		// AddLast(EchoHandler{
+		// 	role: "Server",
+		// })
 	}
 
 	// setup client pipeline initializer.
@@ -88,11 +99,11 @@ func TestNetty() {
 	var bootstrap = netty.NewBootstrap(netty.WithChildInitializer(childInitializer), netty.WithClientInitializer(clientInitializer))
 
 	// connect to the server after 1 second
-	time.AfterFunc(time.Second, func() {
-		_, err := bootstrap.Connect("127.0.0.1:6565", nil)
-		utils.Assert(err)
+	// time.AfterFunc(time.Second, func() {
+	// 	_, err := bootstrap.Connect("127.0.0.1:6565", nil)
+	// 	utils.Assert(err)
 
-	})
+	// })
 
 	// setup bootstrap & startup server.
 	bootstrap.Listen("0.0.0.0:6565").Sync()
@@ -106,7 +117,7 @@ type EchoHandler struct {
 func (l EchoHandler) HandleActive(ctx netty.ActiveContext) {
 	if l.flag {
 		fmt.Println(l.role, "->", "active:", ctx.Channel().RemoteAddr())
-		msgHeader := &codec.MsgHeader{Version: codec.Version_0}
+		msgHeader := &codec.MsgHeader{Version: codec.Version_1}
 		msg := codec.NewConnectMessageWithHeader(msgHeader)
 		msg.MsgBody = &codec.ConnectMsgBody{
 			ProtoId:  "protoId",
@@ -117,7 +128,7 @@ func (l EchoHandler) HandleActive(ctx netty.ActiveContext) {
 
 	//ctx.Write("Hello I'm " + l.role)
 
-	ctx.HandleActive()
+	//ctx.HandleActive()
 }
 
 func (l EchoHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
@@ -132,12 +143,12 @@ func (l EchoHandler) HandleRead(ctx netty.InboundContext, message netty.Message)
 		}
 	}
 
-	ctx.HandleRead(message)
+	//ctx.HandleRead(message)
 }
 
 func (l EchoHandler) HandleInactive(ctx netty.InactiveContext, ex netty.Exception) {
 	if l.flag {
 		fmt.Println(l.role, "->", "inactive:", ctx.Channel().RemoteAddr(), ex)
 	}
-	ctx.HandleInactive(ex)
+	//ctx.HandleInactive(ex)
 }

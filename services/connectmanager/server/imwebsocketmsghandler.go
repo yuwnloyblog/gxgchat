@@ -13,7 +13,7 @@ func (handler IMWebsocketMsgHandler) HandleActive(ctx netty.ActiveContext) {
 	if handler.listener != nil {
 		handler.listener.Create(ctx)
 	}
-	ctx.HandleActive()
+	//ctx.HandleActive()
 }
 
 func (handler IMWebsocketMsgHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
@@ -28,7 +28,7 @@ func (handler IMWebsocketMsgHandler) HandleRead(ctx netty.InboundContext, messag
 			case int32(codec.Cmd_Ping):
 				handler.listener.PingArrived(ctx)
 			case int32(codec.Cmd_Publish):
-				handler.listener.PublishArrived(wsMsg.GetPublishMsgBody(), ctx)
+				handler.listener.PublishArrived(wsMsg.GetPublishMsgBody(), int(wsMsg.GetQos()), ctx)
 			case int32(codec.Cmd_PublishAck):
 				handler.listener.PubAckArrived(wsMsg.GetPubAckMsgBody(), ctx)
 			case int32(codec.Cmd_Query):
@@ -40,7 +40,7 @@ func (handler IMWebsocketMsgHandler) HandleRead(ctx netty.InboundContext, messag
 			}
 		}
 	}
-	ctx.HandleRead(message)
+	//ctx.HandleRead(message)
 }
 
 func (handler IMWebsocketMsgHandler) HandleInactive(ctx netty.InactiveContext, ex netty.Exception) {
@@ -48,7 +48,7 @@ func (handler IMWebsocketMsgHandler) HandleInactive(ctx netty.InactiveContext, e
 		handler.listener.Close(ctx)
 	}
 	ctx.Close(ex)
-	ctx.HandleInactive(ex)
+	//ctx.HandleInactive(ex)
 }
 
 func (handler IMWebsocketMsgHandler) HandleException(ctx netty.ExceptionContext, ex netty.Exception) {
@@ -56,5 +56,5 @@ func (handler IMWebsocketMsgHandler) HandleException(ctx netty.ExceptionContext,
 		handler.listener.ExceptionCaught(ctx, ex)
 	}
 	ctx.Close(ex)
-	ctx.HandleException(ex)
+	//ctx.HandleException(ex)
 }

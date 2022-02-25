@@ -1,6 +1,8 @@
 package connectmanager
 
 import (
+	"fmt"
+
 	"github.com/yuwnloyblog/gmicro"
 	"github.com/yuwnloyblog/gmicro/actorsystem"
 	"github.com/yuwnloyblog/gxgchat/commons/clusters"
@@ -26,10 +28,12 @@ func (ser *ConnectManager) Startup(args map[string]interface{}) {
 		MessageListener: &server.ImListenerImpl{},
 	}
 	go ser.tcpServer.SyncStart(tcpPort)
+	fmt.Println("start with tcp port :", tcpPort)
 	ser.wsServer = &server.ImWebsocketServer{
 		MessageListener: &server.ImListenerImpl{},
 	}
 	go ser.wsServer.SyncStart(wsPort)
+	fmt.Println("start with ws port :", wsPort)
 }
 
 func (ser *ConnectManager) Shutdown() {

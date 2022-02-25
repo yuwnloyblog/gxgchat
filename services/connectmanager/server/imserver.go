@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/go-netty/go-netty"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
@@ -16,6 +17,7 @@ func (server *ImServer) SyncStart(port int) {
 	childInitializer := func(channel netty.Channel) {
 		channel.Pipeline().
 			AddLast(codec.ImCodecHandler{}).
+			AddLast(codec.NewReadTimeoutHandler(300 * time.Second)).
 			AddLast(ImMessageHandler{server.MessageListener})
 	}
 

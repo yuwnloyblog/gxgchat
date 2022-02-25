@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
@@ -26,23 +25,22 @@ func GenerateUUIDShortString() string {
 	return UUID2ShortString(GenerateUUID())
 }
 
+func ShortCut(str string) string {
+	if len(str) > 16 {
+		return str[5:16]
+	}
+	return ""
+}
+
 func UUID2ShortString(uuid uuid.UUID) string {
 	mostBits := make([]byte, 8)
 	leastBits := make([]byte, 8)
 	for i := 0; i < 8; i++ {
 		mostBits[i] = uuid[i]
-		fmt.Print(uuid[i])
-		fmt.Print(",")
 	}
 	for i := 8; i < 16; i++ {
 		leastBits[i-8] = uuid[i]
-		fmt.Print(uuid[i])
-		fmt.Print(",")
 	}
-	fmt.Println()
-	mostLong := BytesToUInt64(mostBits)
-	leastLong := BytesToUInt64(leastBits)
-	fmt.Println("most:", mostLong, "\tleast:", leastLong)
 	return strings.Join([]string{toIdString(BytesToUInt64(mostBits)), toIdString(BytesToUInt64(leastBits))}, "")
 }
 

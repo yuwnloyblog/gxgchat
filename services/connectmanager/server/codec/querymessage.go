@@ -7,10 +7,21 @@ type QueryMessage struct {
 	MsgBody *QueryMsgBody
 }
 
+func NewQueryMessage(msgBody *QueryMsgBody) *QueryMessage {
+	msg := &QueryMessage{
+		MsgHeader: MsgHeader{
+			Version: Version_1,
+		},
+		MsgBody: msgBody,
+	}
+	msg.SetCmd(Cmd_Query)
+	msg.SetQoS(QoS_NeedAck)
+	return msg
+}
 func NewQueryMessageWithHeader(header *MsgHeader) *QueryMessage {
 	msg := &QueryMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,

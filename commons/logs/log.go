@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
@@ -37,42 +38,9 @@ func initInfoLogger() {
 		return
 	}
 
-	//infoLogger.SetOutput(writer)
 	infoLogger.SetOutput(os.Stdout)
 	infoLogger.SetReportCaller(true)
-	// callerPrettyfier := func(frame *runtime.Frame) (function string, file string) {
-	// 	defer func() {
-	// 		recover()
-	// 	}()
-	// 	pc, fullPath, line, _ := runtime.Caller(10)
-	// 	funPc := runtime.FuncForPC(pc)
-	// 	var funcVal, fileVal string
-	// 	funcVal = funPc.Name()
-	// 	if strings.Contains(funcVal, "/") {
-	// 		funcVal = string([]byte(funcVal)[strings.LastIndex(funcVal, "/")+1:])
-	// 	}
-	// 	if strings.Contains(fullPath, "/") {
-	// 		fileVal = fmt.Sprintf("%s:%d", string([]byte(fullPath)[strings.LastIndex(fullPath, "/")+1:]), line)
-	// 	}
-	// 	return funcVal, fileVal
-	// }
-	/*
-		if types.SystemEnvDev == setting.Config.Env {
-			logrus.SetFormatter(&logrus.TextFormatter{
-				ForceColors:      true,
-				FullTimestamp:    true,
-				CallerPrettyfier: callerPrettyfier,
-			})
-			logrus.SetOutput(os.Stdout)
-		} else {
-			logrus.SetFormatter(&logrus.JSONFormatter{
-				CallerPrettyfier: callerPrettyfier,
-			})
-		}
-	*/
-	// infoLogger.SetFormatter(&logrus.JSONFormatter{
-	// 	CallerPrettyfier: callerPrettyfier,
-	// })
+
 	infoLogger.SetFormatter(&LogFormatter{})
 	infoLogger.SetLevel(logrus.DebugLevel)
 }
@@ -88,8 +56,8 @@ func (m *LogFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 		b = &bytes.Buffer{}
 	}
 
-	timestamp := entry.Time.Format("20060102150405.123")
-	newLog := fmt.Sprintf("[%s] %s\n", timestamp, entry.Message)
+	timestamp := entry.Time.Format("060102150405.000")
+	newLog := fmt.Sprintf("%s\t%s\n", timestamp, entry.Message)
 	b.WriteString(newLog)
 	return b.Bytes(), nil
 }
@@ -130,15 +98,24 @@ func Error(f interface{}, v ...interface{}) {
 func Warn(f interface{}, v ...interface{}) {
 	errorLogger.Warn(f, v)
 }
-
-func Info(f interface{}, v ...interface{}) {
-	infoLogger.Info(f, v)
+func Info(v ...interface{}) {
+	pl := len(v)
+	if pl > 0 {
+		arr := make([]string, pl)
+		for i := 0; i < pl; i++ {
+			arr[i] = "%v"
+		}
+		format := strings.Join(arr, "\t")
+		infoLogger.Info(fmt.Sprintf(format, v...))
+	}
+}
+func Infof(format string, v ...interface{}) {
+	infoLogger.Info(fmt.Sprintf(format, v...))
+}
+func Debugf(format string, v ...interface{}) {
+	infoLogger.Debug(fmt.Sprintf(format, v...))
 }
 
-func Debug(f interface{}, v ...interface{}) {
-	infoLogger.Debug(f, v)
-}
-
-func Trace(f interface{}, v ...interface{}) {
-	infoLogger.Trace(f, v)
+func Tracef(format string, v ...interface{}) {
+	infoLogger.Trace(fmt.Sprintf(format, v...))
 }

@@ -7,15 +7,28 @@ type QueryAckMessage struct {
 	MsgBody *QueryAckMsgBody
 }
 
+func NewQueryAckMessage(msgBody *QueryAckMsgBody, qos int) *QueryAckMessage {
+	msg := &QueryAckMessage{
+		MsgHeader: MsgHeader{
+			Version: Version_1,
+		},
+		MsgBody: msgBody,
+	}
+	msg.SetCmd(Cmd_QueryAck)
+	msg.SetQoS(QoS_NoAck)
+	return msg
+}
 func NewQueryAckMessageWithHeader(header *MsgHeader) *QueryAckMessage {
 	msg := &QueryAckMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,
 		},
 	}
+	msg.SetCmd(Cmd_QueryAck)
+	msg.SetQoS(QoS_NoAck)
 	return msg
 }
 

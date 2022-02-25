@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	Version_0 byte   = byte(0)
+	Version_1 byte   = byte(1)
 	ProtoId   string = "IamGxg"
 
 	QoS_NoAck   int = 0
@@ -87,11 +87,13 @@ func (msg *MsgHeader) EncodeHeader(buf *bytes.Buffer, bodyBytes []byte) {
 	buf.WriteByte(msg.HeaderCode)
 
 	msg.MsgBodySize = len(bodyBytes)
-	msg.calChecksum(bodyBytes)
-
+	msg.Checksum = calChecksum(msg.HeaderCode, bodyBytes)
 	buf.WriteByte(msg.Checksum)
-	//write body size
-	buf.Write(MsgBodySize2Bytes(msg.MsgBodySize))
+
+	if msg.GetCmd() != Cmd_Ping && msg.GetCmd() != Cmd_Pong {
+		//write body size
+		buf.Write(MsgBodySize2Bytes(msg.MsgBodySize))
+	}
 }
 
 func (msg *MsgHeader) DecodeHeader(reader io.Reader) {
@@ -102,20 +104,19 @@ func (msg *MsgHeader) DecodeHeader(reader io.Reader) {
 	reader.Read(tmpBs)
 	msg.Checksum = tmpBs[0]
 
-	msg.MsgBodySize = Bytes2MsgBodySize(reader)
-}
-
-func (msg *MsgHeader) calChecksum(bodyBytes []byte) {
-	msg.Checksum = msg.HeaderCode
-	for _, b := range bodyBytes {
-		msg.Checksum = msg.Checksum ^ b
+	if msg.GetCmd() != Cmd_Ping && msg.GetCmd() != Cmd_Pong {
+		msg.MsgBodySize = Bytes2MsgBodySize(reader)
 	}
 }
-func (msg *MsgHeader) ValidateChecksum(bodyBytes []byte) bool {
-	checksum := msg.HeaderCode
+func calChecksum(initChecksum byte, bodyBytes []byte) byte {
+	checksum := initChecksum
 	for _, b := range bodyBytes {
 		checksum = checksum ^ b
 	}
+	return checksum
+}
+func (msg *MsgHeader) ValidateChecksum(bodyBytes []byte) bool {
+	checksum := calChecksum(msg.HeaderCode, bodyBytes)
 	if checksum == msg.Checksum {
 		return true
 	} else {
@@ -138,6 +139,8 @@ func MsgBodySize2Bytes(msgBodySize int) []byte {
 				break
 			}
 		}
+	} else {
+		buf.WriteByte(0)
 	}
 	return buf.Bytes()
 }

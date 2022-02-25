@@ -7,16 +7,27 @@ type ConnectAckMessage struct {
 	MsgBody *ConnectAckMsgBody
 }
 
-func NewConnectAckMessageWithHeader(header *MsgHeader) *ConnectMessage {
-	msg := &ConnectMessage{
+func NewConnectAckMessage(msgBody *ConnectAckMsgBody) *ConnectAckMessage {
+	msg := &ConnectAckMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version: Version_1,
+		},
+		MsgBody: msgBody,
+	}
+	msg.SetQoS(QoS_NoAck)
+	msg.SetCmd(Cmd_ConnectAck)
+	return msg
+}
+func NewConnectAckMessageWithHeader(header *MsgHeader) *ConnectAckMessage {
+	msg := &ConnectAckMessage{
+		MsgHeader: MsgHeader{
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,
 		},
 	}
-	msg.SetCmd(Cmd_Connect)
+	msg.SetCmd(Cmd_ConnectAck)
 	msg.SetQoS(QoS_NoAck)
 	return msg
 }

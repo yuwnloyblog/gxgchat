@@ -14,7 +14,7 @@ type ServerPublishMessage struct {
 func NewServerPublishMessageWithHeader(header *MsgHeader) *ServerPublishMessage {
 	msg := &ServerPublishMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,
@@ -34,11 +34,21 @@ func (msg *ServerPublishMessage) DecodeBody(msgBodyBytes []byte) error {
 	msg.MsgBody = &PublishMsgBody{}
 	return tools.PbUnMarshal(msgBodyBytes, msg.MsgBody)
 }
-
+func NewUserPublishMessage(msgBody *PublishMsgBody) *UserPublishMessage {
+	msg := &UserPublishMessage{
+		MsgHeader: MsgHeader{
+			Version: Version_1,
+		},
+		MsgBody: msgBody,
+	}
+	msg.SetCmd(Cmd_Publish)
+	msg.SetQoS(QoS_NeedAck)
+	return msg
+}
 func NewUserPublishMessageWithHeader(header *MsgHeader) *UserPublishMessage {
 	msg := &UserPublishMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,

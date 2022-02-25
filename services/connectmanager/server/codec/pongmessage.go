@@ -7,7 +7,7 @@ type PongMessage struct {
 func NewPongMessageWithHeader(header *MsgHeader) *PongMessage {
 	msg := &PongMessage{
 		MsgHeader: MsgHeader{
-			Version:     Version_0,
+			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
 			MsgBodySize: header.MsgBodySize,
@@ -17,6 +17,18 @@ func NewPongMessageWithHeader(header *MsgHeader) *PongMessage {
 	msg.SetQoS(QoS_NoAck)
 	return msg
 }
+
+func NewPonMessage() *PongMessage {
+	msg := &PongMessage{
+		MsgHeader: MsgHeader{
+			Version: Version_1,
+		},
+	}
+	msg.SetCmd(Cmd_Pong)
+	msg.SetQoS(QoS_NoAck)
+	return msg
+}
+
 func (msg *PongMessage) EncodeBody() ([]byte, error) {
 	return []byte{}, nil
 }
