@@ -29,7 +29,9 @@ func PublishMessage(appkey, userid, session string, serverPubMsg *codec.PublishM
 				}
 				vCtx.Write(tmpPubMsg)
 				logs.Info(utils.GetConnSession(vCtx), utils.Action_ServerPub, tmpPubMsg.Index, tmpPubMsg.Topic, len(tmpPubMsg.Data))
-
+				if callback != nil {
+					utils.PutServerPubCallback(vCtx, tmpPubMsg.Index, callback)
+				}
 			}
 		}
 	}

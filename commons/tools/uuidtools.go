@@ -21,8 +21,11 @@ func UUIDStringByBytes(bytes []byte) (string, error) {
 	return uuid.String(), err
 }
 
-func GenerateUUIDShortString() string {
+func GenerateUUIDShort22() string {
 	return UUID2ShortString(GenerateUUID())
+}
+func GenerateUUIDShort11() string {
+	return ShortCut(GenerateUUIDShort22())
 }
 
 func ShortCut(str string) string {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-netty/go-netty"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
+	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/utils"
 )
 
 type ImServer struct {
@@ -19,6 +20,7 @@ func (server *ImServer) SyncStart(port int) {
 			AddLast(codec.ImCodecHandler{}).
 			AddLast(codec.NewReadTimeoutHandler(300 * time.Second)).
 			AddLast(ImMessageHandler{server.MessageListener})
+		utils.InitCtxAttrByChannel(channel)
 	}
 
 	// new bootstrap

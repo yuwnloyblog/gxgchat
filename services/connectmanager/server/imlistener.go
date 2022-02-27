@@ -7,7 +7,6 @@ import (
 
 	"github.com/go-netty/go-netty"
 	"github.com/yuwnloyblog/gxgchat/commons/logs"
-	"github.com/yuwnloyblog/gxgchat/commons/tools"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/utils"
 )
@@ -29,8 +28,9 @@ type ImListener interface {
 type ImListenerImpl struct{}
 
 func (*ImListenerImpl) Create(ctx netty.ActiveContext) {
-	utils.SetContextAttr(ctx, utils.StateKey_ConnectSession, tools.GenerateUUIDShortString())
-	utils.SetContextAttr(ctx, utils.StateKey_ConnectCreateTime, time.Now().UnixMilli())
+	// utils.SetContextAttr(ctx, utils.StateKey_ConnectSession, tools.GenerateUUIDShortString())
+	// utils.SetContextAttr(ctx, utils.StateKey_ConnectCreateTime, time.Now().UnixMilli())
+	// utils.SetContextAttr(ctx, utils.StateKey_CtxLocker, &sync.Mutex{})
 }
 func (*ImListenerImpl) Close(ctx netty.InactiveContext) {
 }
@@ -49,7 +49,7 @@ func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, ctx netty.InboundCon
 	msgAck := codec.NewConnectAckMessage(&codec.ConnectAckMsgBody{
 		Code:      utils.ConnectAckState_Access,
 		UserId:    msg.Token,
-		Session:   utils.GetContextAttrString(ctx, utils.StateKey_ConnectSession),
+		Session:   utils.GetConnSession(ctx),
 		Timestamp: time.Now().UnixMilli(),
 	})
 	utils.SetContextAttr(ctx, utils.StateKey_Appkey, msg.Appkey)

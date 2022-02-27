@@ -9,6 +9,7 @@ import (
 	"github.com/go-netty/go-netty-transport/websocket"
 	"github.com/go-netty/go-netty/codec/frame"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
+	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/utils"
 )
 
 type ImWebsocketServer struct {
@@ -33,6 +34,7 @@ func (server *ImWebsocketServer) SyncStart(port int) {
 			AddLast(codec.NewReadTimeoutHandler(300 * time.Second)).
 			AddLast(codec.ImWebsocketCodecHandler{}).
 			AddLast(IMWebsocketMsgHandler{server.MessageListener})
+		utils.InitCtxAttrByChannel(channel)
 	}
 	//setup bootstrap & startup server
 	server.bootstrap = netty.NewBootstrap(netty.WithChildInitializer(setupCodec), netty.WithTransport(websocket.New()))

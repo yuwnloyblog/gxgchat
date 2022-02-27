@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"encoding/binary"
 	"fmt"
+	"sync"
 
 	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/codec/format"
@@ -50,15 +50,25 @@ func (a *MyActor) OnReceive(msg proto.Message) {
 
 func main() {
 	// TestNetty()
-	len := 0
+	SetMap("aa", "aaa")
+	fmt.Println(GetMap())
+}
 
-	bs := codec.MsgBodySize2Bytes(len)
+var m interface{}
 
-	fmt.Println(bs)
-
-	reader := bytes.NewReader(bs)
-	ret := codec.Bytes2MsgBodySize(reader)
-	fmt.Println(ret)
+func SetMap(k, v string) {
+	mp := GetMap()
+	mp.Store(k, v)
+}
+func GetMap() sync.Map {
+	var mp sync.Map
+	if m == nil {
+		mp = sync.Map{}
+		m = mp
+	} else {
+		mp = m.(sync.Map)
+	}
+	return mp
 }
 
 func main_a() {
