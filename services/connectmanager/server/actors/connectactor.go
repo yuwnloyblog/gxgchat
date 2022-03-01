@@ -24,7 +24,7 @@ func (actor ConnectActor) OnReceive(input proto.Message) {
 		} else if rpcMsg.RpcMsgType == pbobjs.RpcMsgType_QueryAck {
 			var callback func()
 			var timeoutCallback func()
-			if int(rpcMsg.Qos) == codec.QoS_NeedAck {
+			if int(rpcMsg.Qos) == codec.QoS_NeedAck || actor.Sender != actorsystem.NoSender {
 				callback = func() {}
 				timeoutCallback = func() {}
 			}
@@ -37,7 +37,7 @@ func (actor ConnectActor) OnReceive(input proto.Message) {
 		} else if rpcMsg.RpcMsgType == pbobjs.RpcMsgType_ServerPub {
 			var callback func()
 			var timeoutCallback func()
-			if int(rpcMsg.Qos) == codec.QoS_NeedAck {
+			if int(rpcMsg.Qos) == codec.QoS_NeedAck || actor.Sender != actorsystem.NoSender {
 				callback = func() {}
 				timeoutCallback = func() {}
 			}
