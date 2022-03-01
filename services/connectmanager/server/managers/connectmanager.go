@@ -1,4 +1,4 @@
-package server
+package managers
 
 import (
 	"hash/crc32"
@@ -34,7 +34,7 @@ func GetConnectCtxByUser(appkey, userid string) map[string]netty.HandlerContext 
 	return map[string]netty.HandlerContext{}
 }
 func PutInContextCache(ctx netty.HandlerContext) {
-	session := utils.GetContextAttrString(ctx, utils.StateKey_ConnectSession)
+	session := utils.GetConnSession(ctx)
 	if session != "" {
 		OnlineSessionConnectMap.Store(session, ctx)
 

@@ -5,7 +5,6 @@ import (
 
 	"github.com/yuwnloyblog/gmicro"
 	"github.com/yuwnloyblog/gmicro/actorsystem"
-	"github.com/yuwnloyblog/gxgchat/commons/clusters"
 	"github.com/yuwnloyblog/gxgchat/commons/configures"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/actors"
@@ -18,7 +17,7 @@ type ConnectManager struct {
 
 func (ser *ConnectManager) RegisterActors(register gmicro.IActorRegister) {
 	register.RegisterActor("connect", func() actorsystem.IUntypedActor {
-		return clusters.BaseProcessActor(&actors.ConnectActor{})
+		return &actors.ConnectActor{}
 	}, 64)
 }
 func (ser *ConnectManager) Startup(args map[string]interface{}) {

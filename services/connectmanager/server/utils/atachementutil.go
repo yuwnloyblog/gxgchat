@@ -90,3 +90,18 @@ func PutServerPubCallback(ctx netty.HandlerContext, index int32, callback func()
 	}
 	callbackMap.Store(index, callback)
 }
+
+func PutQueryAckCallback(ctx netty.HandlerContext, index int32, callback func()) {
+	lock := GetCtxLocker(ctx)
+	lock.Lock()
+	defer lock.Unlock()
+	obj := GetContextAttr(ctx, StateKey_QueryConfirmMap)
+	var callbackMap *sync.Map
+	if obj == nil {
+		callbackMap = &sync.Map{}
+		SetContextAttr(ctx, StateKey_QueryConfirmMap, callbackMap)
+	} else {
+		callbackMap = obj.(*sync.Map)
+	}
+	callbackMap.Store(index, callback)
+}

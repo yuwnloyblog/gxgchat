@@ -2,10 +2,12 @@ package clusters
 
 import (
 	"strings"
+	"time"
 
 	"github.com/yuwnloyblog/gmicro"
 	"github.com/yuwnloyblog/gmicro/actorsystem"
 	"github.com/yuwnloyblog/gxgchat/commons/configures"
+	"github.com/yuwnloyblog/gxgchat/commons/pbdefines/pbobjs"
 )
 
 const (
@@ -13,39 +15,52 @@ const (
 	Mod_Cluster = "cluster"
 )
 
-var Cluster *ImCluster
+var cluster *gmicro.Cluster
 
 func InitCluster() error {
 	clusterMod := configures.Config.ClusterMod
 	if clusterMod == Mod_Cluster {
 		zkAddress := strings.Split(configures.Config.Zookeeper.Address, ",")
-		Cluster = &ImCluster{
-			Cluster: gmicro.NewCluster(configures.Config.ClusterName, configures.Config.NodeName, configures.Config.RpcHost, configures.Config.RpcPort, zkAddress),
-		}
+		cluster = gmicro.NewCluster(configures.Config.ClusterName, configures.Config.NodeName, configures.Config.RpcHost, configures.Config.RpcPort, zkAddress)
 	} else {
-		Cluster = &ImCluster{
-			Cluster: gmicro.NewSingleCluster(configures.Config.ClusterName, configures.Config.NodeName),
-		}
+		cluster = gmicro.NewSingleCluster(configures.Config.ClusterName, configures.Config.NodeName)
 	}
 	return nil
 }
 
-type ImCluster struct {
-	Cluster *gmicro.Cluster
+type IRoute interface {
+	GetMethod() string
+	GetTargetId() string
 }
 
-func (cluster *ImCluster) RegisterActor(method string, actorCreator func() actorsystem.IUntypedActor, concurrentCount int) {
-	cluster.Cluster.RegisterActor(method, func() actorsystem.IUntypedActor {
-		return BaseProcessActor(actorCreator())
-	}, concurrentCount)
+func GetCluster() *gmicro.Cluster {
+	return cluster
 }
 
-func (cluster *ImCluster) StartUp() {
-	if cluster.Cluster != nil {
-		cluster.Cluster.StartUp()
+func UnicastRouteWithCallback(msg IRoute, callbackActor actorsystem.ICallbackUntypedActor, ttl time.Duration) {
+	sender := cluster.CallbackActorOf(ttl, callbackActor)
+	cluster.UnicastRoute(msg.GetMethod(), msg.GetTargetId(), msg.(*pbobjs.RpcMessageWraper), sender)
+}
+
+func UnicastRoute(msg IRoute, sendMethod string) {
+	sender := cluster.LocalActorOf(sendMethod)
+	cluster.UnicastRoute(msg.GetMethod(), msg.GetTargetId(), msg.(*pbobjs.RpcMessageWraper), sender)
+}
+
+func UnicastRouteWithNoSender(msg IRoute) {
+	cluster.UnicastRouteWithNoSender(msg.GetMethod(), msg.GetTargetId(), msg.(*pbobjs.RpcMessageWraper))
+}
+
+func UnicastRouteWithSenderActor(msg IRoute, sender actorsystem.ActorRef) {
+	cluster.UnicastRoute(msg.GetMethod(), msg.GetTargetId(), msg.(*pbobjs.RpcMessageWraper), sender)
+}
+
+func Startup() {
+	if cluster != nil {
+		cluster.Startup()
 	}
 }
 
-func (cluster *ImCluster) Shutdown() {
+func Shutdown() {
 
 }

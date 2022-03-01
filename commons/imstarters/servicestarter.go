@@ -24,7 +24,7 @@ func Loaded(server IServiceStarter) {
 	if server != nil {
 		//register actors
 		if regActorsHandler, ok := server.(IRegisterActorsHandler); ok {
-			regActorsHandler.RegisterActors(clusters.Cluster)
+			regActorsHandler.RegisterActors(clusters.GetCluster())
 		}
 		serverList = append(serverList, server)
 	}
@@ -37,7 +37,7 @@ func Startup() {
 			startHandler.Startup(map[string]interface{}{})
 		}
 	}
-	clusters.Cluster.StartUp()
+	clusters.Startup()
 }
 
 func Shutdown() {

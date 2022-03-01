@@ -11,6 +11,17 @@ type ServerPublishMessage struct {
 	MsgBody *PublishMsgBody
 }
 
+func NewServerPublishMessage(msgBody *PublishMsgBody, qos int) *ServerPublishMessage {
+	msg := &ServerPublishMessage{
+		MsgHeader: MsgHeader{
+			Version: Version_1,
+		},
+		MsgBody: msgBody,
+	}
+	msg.SetCmd(Cmd_Publish)
+	msg.SetQoS(qos)
+	return msg
+}
 func NewServerPublishMessageWithHeader(header *MsgHeader) *ServerPublishMessage {
 	msg := &ServerPublishMessage{
 		MsgHeader: MsgHeader{

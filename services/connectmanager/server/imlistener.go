@@ -6,8 +6,11 @@ import (
 	"time"
 
 	"github.com/go-netty/go-netty"
+	"github.com/yuwnloyblog/gxgchat/commons/clusters"
 	"github.com/yuwnloyblog/gxgchat/commons/logs"
+	"github.com/yuwnloyblog/gxgchat/commons/pbdefines/pbobjs"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
+	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/managers"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/utils"
 )
 
@@ -45,7 +48,7 @@ func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, ctx netty.InboundCon
 
 	//success
 	logs.Info(utils.GetConnSession(ctx), utils.Action_Connect, msg.Appkey, userId, msg.SdkVersion, msg.DeviceId, msg.Platform, msg.DeviceCompany, msg.DeviceModel, msg.DeviceOsVersion, msg.NetworkId, msg.IspNum, clientIp)
-	PutInContextCache(ctx)
+	managers.PutInContextCache(ctx)
 	msgAck := codec.NewConnectAckMessage(&codec.ConnectAckMsgBody{
 		Code:      utils.ConnectAckState_Access,
 		UserId:    msg.Token,
@@ -62,20 +65,21 @@ func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, ctx netty.InboundCon
 func (*ImListenerImpl) Diconnected(msg *codec.DisconnectMsgBody, ctx netty.InboundContext) {
 	logs.Info(utils.GetConnSession(ctx), utils.Action_Disconnect, msg.Code)
 	ctx.Close(fmt.Errorf("dissconnect"))
-	RemoveFromContextCache(ctx)
+	managers.RemoveFromContextCache(ctx)
 }
 func (*ImListenerImpl) PublishArrived(msg *codec.PublishMsgBody, qos int, ctx netty.InboundContext) {
 	logs.Info(utils.GetConnSession(ctx), utils.Action_UserPub, msg.Index, msg.Topic, msg.TargetId, len(msg.Data))
-	if qos == codec.QoS_NeedAck {
-		//Debug
-		ctx.Channel().Write(codec.NewUserPublishAckMessage(&codec.PublishAckMsgBody{
-			Index:     msg.Index,
-			Code:      0,
-			MsgId:     "test-msg-id",
-			Timestamp: time.Now().UnixMilli(),
-		}))
-	}
-	logs.Info(utils.GetConnSession(ctx), utils.Action_UserPubAck, msg.Index, 0)
+	clusters.UnicastRoute(&pbobjs.RpcMessageWraper{
+		RpcMsgType:   pbobjs.RpcMsgType_UserPub,
+		AppKey:       utils.GetContextAttrString(ctx, utils.StateKey_Appkey),
+		Session:      utils.GetConnSession(ctx),
+		Method:       msg.Topic,
+		RequesterId:  utils.GetContextAttrString(ctx, utils.StateKey_UserID),
+		ReqIndex:     msg.Index,
+		Qos:          int32(qos),
+		AppDataBytes: msg.Data,
+		TargetId:     msg.TargetId,
+	}, "connect")
 }
 func (*ImListenerImpl) PubAckArrived(msg *codec.PublishAckMsgBody, ctx netty.InboundContext) {
 	logs.Info(utils.GetConnSession(ctx), utils.Action_ServerPubAck, msg.Index)
