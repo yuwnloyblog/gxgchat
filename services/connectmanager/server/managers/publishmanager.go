@@ -63,7 +63,7 @@ func PublishServerPubMessage(appkey, userid, session string, serverPubMsg *codec
 	}
 }
 
-func PublishQryAckMessage(appkey, userid, session string, qryAckMsg *codec.QueryAckMsgBody, callback func(), timeoutCallback func()) {
+func PublishQryAckMessage(session string, qryAckMsg *codec.QueryAckMsgBody, callback func(), timeoutCallback func()) {
 	ctx := GetConnectCtxBySession(session)
 	if ctx != nil {
 		qos := codec.QoS_NoAck

@@ -4,6 +4,16 @@ import (
 	"github.com/yuwnloyblog/gxgchat/commons/pbdefines/pbobjs"
 )
 
+func CreateServerPubWraper(requesterId, targetId, method string, ctx BaseContext) *pbobjs.RpcMessageWraper {
+	serverPub := &pbobjs.RpcMessageWraper{
+		RpcMsgType: pbobjs.RpcMsgType_ServerPub,
+	}
+	handleBaseContext(serverPub, ctx)
+	serverPub.RequesterId = requesterId
+	serverPub.TargetId = targetId
+	serverPub.Method = method
+	return serverPub
+}
 func CreateUserPubAckWraper(code int, msgId string, msgSendTime int64, ctx BaseContext) *pbobjs.RpcMessageWraper {
 	userPubAck := &pbobjs.RpcMessageWraper{
 		RpcMsgType:  pbobjs.RpcMsgType_UserPubAck,

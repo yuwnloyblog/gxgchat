@@ -28,7 +28,7 @@ func (actor ConnectActor) OnReceive(input proto.Message) {
 				callback = func() {}
 				timeoutCallback = func() {}
 			}
-			managers.PublishQryAckMessage(rpcMsg.AppKey, rpcMsg.RequesterId, rpcMsg.Session, &codec.QueryAckMsgBody{
+			managers.PublishQryAckMessage(rpcMsg.Session, &codec.QueryAckMsgBody{
 				Index:     rpcMsg.ReqIndex,
 				Code:      rpcMsg.ResultCode,
 				Timestamp: rpcMsg.MsgSendTime,
