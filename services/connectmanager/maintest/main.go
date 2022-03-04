@@ -3,12 +3,10 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"time"
 
 	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/codec/format"
 	"github.com/go-netty/go-netty/codec/frame"
-	"github.com/rfyiamcool/go-timewheel"
 	"github.com/yuwnloyblog/gmicro/actorsystem"
 	"github.com/yuwnloyblog/gxgchat/commons/clusters"
 	"github.com/yuwnloyblog/gxgchat/commons/pbdefines/pbobjs"
@@ -51,17 +49,6 @@ func (a *MyActor) OnReceive(msg proto.Message) {
 
 func main() {
 	// TestNetty()
-	timer, err := timewheel.NewTimeWheel(1*time.Second, 360)
-	if err == nil {
-		timer.Start()
-		fmt.Println("start")
-		start := time.Now()
-		timer.Add(10*time.Second, func() {
-			fmt.Println("xxxx", time.Since(start))
-		})
-		//timer.Remove(tsk)
-	}
-	time.Sleep(1 * time.Minute)
 }
 
 func main_a() {
