@@ -23,11 +23,11 @@ func (handler ImMessageHandler) HandleRead(ctx netty.InboundContext, message net
 	if handler.listener != nil {
 		switch msg := message.(type) {
 		case *codec.ConnectMessage:
-			handler.listener.Connected(msg.MsgBody, ctx)
+			handler.listener.Connected(msg.MsgBody, msg.Sequence, ctx)
 		case *codec.DisconnectMessage:
 			handler.listener.Diconnected(msg.MsgBody, ctx)
 		case *codec.PingMessage:
-			handler.listener.PingArrived(ctx)
+			handler.listener.PingArrived(msg.Sequence, ctx)
 		case *codec.UserPublishMessage:
 			handler.listener.PublishArrived(msg.MsgBody, msg.GetQoS(), ctx)
 		case *codec.ServerPublishAckMessage:

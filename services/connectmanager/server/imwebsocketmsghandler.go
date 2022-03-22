@@ -22,11 +22,11 @@ func (handler IMWebsocketMsgHandler) HandleRead(ctx netty.InboundContext, messag
 		if ok {
 			switch wsMsg.Cmd {
 			case int32(codec.Cmd_Connect):
-				handler.listener.Connected(wsMsg.GetConnectMsgBody(), ctx)
+				handler.listener.Connected(wsMsg.GetConnectMsgBody(), [2]byte{0, 0}, ctx)
 			case int32(codec.Cmd_Disconnect):
 				handler.listener.Diconnected(wsMsg.GetDisconnectMsgBody(), ctx)
 			case int32(codec.Cmd_Ping):
-				handler.listener.PingArrived(ctx)
+				handler.listener.PingArrived([2]byte{0, 0}, ctx)
 			case int32(codec.Cmd_Publish):
 				handler.listener.PublishArrived(wsMsg.GetPublishMsgBody(), int(wsMsg.GetQos()), ctx)
 			case int32(codec.Cmd_PublishAck):

@@ -10,6 +10,7 @@ func NewPongMessageWithHeader(header *MsgHeader) *PongMessage {
 			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
+			Sequence:    header.Sequence,
 			MsgBodySize: header.MsgBodySize,
 		},
 	}
@@ -18,7 +19,19 @@ func NewPongMessageWithHeader(header *MsgHeader) *PongMessage {
 	return msg
 }
 
-func NewPonMessage() *PongMessage {
+func NewPongMessageWithSeq(seq [2]byte) *PongMessage {
+	msg := &PongMessage{
+		MsgHeader: MsgHeader{
+			Version:  Version_1,
+			Sequence: seq,
+		},
+	}
+	msg.SetCmd(Cmd_Pong)
+	msg.SetQoS(QoS_NoAck)
+	return msg
+}
+
+func NewPongMessage() *PongMessage {
 	msg := &PongMessage{
 		MsgHeader: MsgHeader{
 			Version: Version_1,

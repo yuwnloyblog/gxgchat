@@ -27,6 +27,7 @@ func NewConnectMessageWithHeader(header *MsgHeader) *ConnectMessage {
 			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
+			Sequence:    header.Sequence,
 			MsgBodySize: header.MsgBodySize,
 		},
 	}

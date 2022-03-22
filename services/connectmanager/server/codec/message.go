@@ -47,6 +47,7 @@ type MsgHeader struct {
 	Version     byte
 	HeaderCode  byte
 	Checksum    byte
+	Sequence    [2]byte
 	MsgBodySize int
 }
 

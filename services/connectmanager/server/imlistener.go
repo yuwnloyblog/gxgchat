@@ -19,13 +19,13 @@ type ImListener interface {
 	Close(ctx netty.InactiveContext)
 	ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception)
 
-	Connected(msg *codec.ConnectMsgBody, ctx netty.InboundContext)
+	Connected(msg *codec.ConnectMsgBody, seq [2]byte, ctx netty.InboundContext)
 	Diconnected(msg *codec.DisconnectMsgBody, ctx netty.InboundContext)
 	PublishArrived(msg *codec.PublishMsgBody, qos int, ctx netty.InboundContext)
 	PubAckArrived(msg *codec.PublishAckMsgBody, ctx netty.InboundContext)
 	QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext)
 	QueryConfirmArrived(msg *codec.QueryConfirmMsgBody, ctx netty.InboundContext)
-	PingArrived(ctx netty.InboundContext)
+	PingArrived(seq [2]byte, ctx netty.InboundContext)
 }
 
 type ImListenerImpl struct{}
@@ -38,7 +38,7 @@ func (*ImListenerImpl) Create(ctx netty.ActiveContext) {
 func (*ImListenerImpl) Close(ctx netty.InactiveContext) {
 }
 func (*ImListenerImpl) ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception) {}
-func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, ctx netty.InboundContext) {
+func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, seq [2]byte, ctx netty.InboundContext) {
 	userId := msg.Token
 	clientIp := msg.ClientIp
 	if clientIp == "" {
@@ -105,6 +105,6 @@ func (*ImListenerImpl) QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundCo
 func (*ImListenerImpl) QueryConfirmArrived(msg *codec.QueryConfirmMsgBody, ctx netty.InboundContext) {
 	logs.Info(utils.GetConnSession(ctx), utils.Action_QueryConfirm, msg.Index)
 }
-func (*ImListenerImpl) PingArrived(ctx netty.InboundContext) {
-	ctx.Write(codec.NewPonMessage())
+func (*ImListenerImpl) PingArrived(seq [2]byte, ctx netty.InboundContext) {
+	ctx.Write(codec.NewPongMessageWithSeq(seq))
 }

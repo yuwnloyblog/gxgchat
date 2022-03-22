@@ -7,6 +7,19 @@ type ConnectAckMessage struct {
 	MsgBody *ConnectAckMsgBody
 }
 
+func NewConnectAckWithSeq(msgBody *ConnectAckMsgBody, seq [2]byte) *ConnectAckMessage {
+	msg := &ConnectAckMessage{
+		MsgHeader: MsgHeader{
+			Version:  Version_1,
+			Sequence: seq,
+		},
+		MsgBody: msgBody,
+	}
+	msg.SetQoS(QoS_NoAck)
+	msg.SetCmd(Cmd_ConnectAck)
+	return msg
+}
+
 func NewConnectAckMessage(msgBody *ConnectAckMsgBody) *ConnectAckMessage {
 	msg := &ConnectAckMessage{
 		MsgHeader: MsgHeader{
@@ -24,6 +37,7 @@ func NewConnectAckMessageWithHeader(header *MsgHeader) *ConnectAckMessage {
 			Version:     Version_1,
 			HeaderCode:  header.HeaderCode,
 			Checksum:    header.Checksum,
+			Sequence:    header.Sequence,
 			MsgBodySize: header.MsgBodySize,
 		},
 	}
