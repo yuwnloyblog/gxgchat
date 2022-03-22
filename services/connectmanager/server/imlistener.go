@@ -49,7 +49,7 @@ func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, seq [2]byte, ctx net
 	//success
 	logs.Info(utils.GetConnSession(ctx), utils.Action_Connect, msg.Appkey, userId, msg.SdkVersion, msg.DeviceId, msg.Platform, msg.DeviceCompany, msg.DeviceModel, msg.DeviceOsVersion, msg.NetworkId, msg.IspNum, clientIp)
 	managers.PutInContextCache(ctx)
-	msgAck := codec.NewConnectAckMessage(&codec.ConnectAckMsgBody{
+	msgAck := codec.NewConnectAckMessage(seq, &codec.ConnectAckMsgBody{
 		Code:      utils.ConnectAckState_Access,
 		UserId:    msg.Token,
 		Session:   utils.GetConnSession(ctx),

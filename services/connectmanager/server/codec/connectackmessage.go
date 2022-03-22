@@ -20,10 +20,11 @@ func NewConnectAckWithSeq(msgBody *ConnectAckMsgBody, seq [2]byte) *ConnectAckMe
 	return msg
 }
 
-func NewConnectAckMessage(msgBody *ConnectAckMsgBody) *ConnectAckMessage {
+func NewConnectAckMessage(seq [2]byte, msgBody *ConnectAckMsgBody) *ConnectAckMessage {
 	msg := &ConnectAckMessage{
 		MsgHeader: MsgHeader{
-			Version: Version_1,
+			Version:  Version_1,
+			Sequence: seq,
 		},
 		MsgBody: msgBody,
 	}

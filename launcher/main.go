@@ -5,7 +5,6 @@ import (
 
 	"github.com/yuwnloyblog/gxgchat/commons/clusters"
 	"github.com/yuwnloyblog/gxgchat/commons/configures"
-	"github.com/yuwnloyblog/gxgchat/commons/dbs"
 	"github.com/yuwnloyblog/gxgchat/commons/imstarters"
 	"github.com/yuwnloyblog/gxgchat/commons/logs"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager"
@@ -23,10 +22,10 @@ func main() {
 	//init logs
 	logs.InitLogs()
 	//init mysql
-	if err := dbs.InitMysql(); err != nil {
-		logs.Error("Init Mysql failed.", err)
-		return
-	}
+	// if err := dbs.InitMysql(); err != nil {
+	// 	logs.Error("Init Mysql failed.", err)
+	// 	return
+	// }
 	//init cluster
 	if err := clusters.InitCluster(); err != nil {
 		logs.Error("Init Cluster failed.", err)

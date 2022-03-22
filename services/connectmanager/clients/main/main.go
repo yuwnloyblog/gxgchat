@@ -15,11 +15,11 @@ func main() {
 
 	cli.Connect("network", "ispNum", func(code clients.ClientErrorCode, connAck *codec.ConnectAckMsgBody) {
 		if code == clients.ClientErrorCode_Success {
-			SendPrivateMsg(cli)
+			//SendPrivateMsg(cli)
 
 			//SendMsgTest(cli)
 			//QueryTest(cli)
-			//PingTest(cli)
+			PingTest(cli)
 		}
 	})
 	cli.Disconnect()

@@ -91,7 +91,6 @@ func (msg *MsgHeader) EncodeHeader(buf *bytes.Buffer, bodyBytes []byte) {
 	msg.Checksum = calChecksum(msg.HeaderCode, bodyBytes)
 	buf.WriteByte(msg.Checksum)
 	buf.Write(msg.Sequence[0:2])
-
 	if msg.GetCmd() != Cmd_Ping && msg.GetCmd() != Cmd_Pong {
 		//write body size
 		buf.Write(MsgBodySize2Bytes(msg.MsgBodySize))

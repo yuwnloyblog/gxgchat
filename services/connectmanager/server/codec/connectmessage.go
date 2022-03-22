@@ -12,7 +12,8 @@ type ConnectMessage struct {
 func NewConnectMessage(msgBody *ConnectMsgBody) *ConnectMessage {
 	msg := &ConnectMessage{
 		MsgHeader: MsgHeader{
-			Version: Version_1,
+			Version:  Version_1,
+			Sequence: [2]byte{3, 9},
 		},
 		MsgBody: msgBody,
 	}
