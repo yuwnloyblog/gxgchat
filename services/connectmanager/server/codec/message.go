@@ -90,6 +90,7 @@ func (msg *MsgHeader) EncodeHeader(buf *bytes.Buffer, bodyBytes []byte) {
 	msg.MsgBodySize = len(bodyBytes)
 	msg.Checksum = calChecksum(msg.HeaderCode, bodyBytes)
 	buf.WriteByte(msg.Checksum)
+	buf.Write(msg.Sequence[0:2])
 
 	if msg.GetCmd() != Cmd_Ping && msg.GetCmd() != Cmd_Pong {
 		//write body size
@@ -104,6 +105,11 @@ func (msg *MsgHeader) DecodeHeader(reader io.Reader) {
 
 	reader.Read(tmpBs)
 	msg.Checksum = tmpBs[0]
+	seqBs := make([]byte, 2)
+	reader.Read(seqBs)
+	msg.Sequence = [2]byte{}
+	msg.Sequence[0] = seqBs[0]
+	msg.Sequence[1] = seqBs[1]
 
 	if msg.GetCmd() != Cmd_Ping && msg.GetCmd() != Cmd_Pong {
 		msg.MsgBodySize = Bytes2MsgBodySize(reader)
