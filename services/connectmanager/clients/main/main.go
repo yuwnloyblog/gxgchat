@@ -11,7 +11,9 @@ import (
 )
 
 func main() {
-	cli := clients.NewImClient("127.0.0.1:9001", "appkey", "token")
+	address := "101.199.255.207:80"
+	address = "127.0.0.1:9001"
+	cli := clients.NewImClient(address, "appkey", "token")
 
 	cli.Connect("network", "ispNum", func(code clients.ClientErrorCode, connAck *codec.ConnectAckMsgBody) {
 		if code == clients.ClientErrorCode_Success {
@@ -20,10 +22,14 @@ func main() {
 			//SendMsgTest(cli)
 			//QueryTest(cli)
 			PingTest(cli)
+		} else {
+			fmt.Println(code)
 		}
 	})
 	cli.Disconnect()
-	time.Sleep(5 * time.Second)
+	time.Sleep(time.Second)
+
+	//time.Sleep(5 * time.Second)
 }
 func SendPrivateMsg(cli *clients.ImClient) {
 	if cli != nil {

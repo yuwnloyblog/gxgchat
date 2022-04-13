@@ -124,9 +124,11 @@ func (client *ImClient) Disconnect() {
 			Code: utils.DisconnectState_Quit,
 		})
 		client.channel.Write(disMsg)
-		time.AfterFunc(5*time.Second, func() {
-			client.channel.Close(fmt.Errorf("disconnect"))
-		})
+		client.channel.Close(fmt.Errorf("disconnect"))
+		// tx :=time.AfterFunc(5*time.Second, func() {
+		// 	client.channel.Close(fmt.Errorf("disconnect"))
+		// })
+
 		client.channel = nil
 	}
 	client.state = State_Disconnect

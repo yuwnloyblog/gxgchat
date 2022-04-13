@@ -68,10 +68,12 @@ func (ImCodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 		if err != nil {
 			ctx.Close(err)
 		}
+
+		ctx.HandleRead(imMsg)
 	} else {
-		panic(fmt.Errorf("wrong proto received"))
+		ctx.Close(fmt.Errorf("wrong proto received"))
+		//panic(fmt.Errorf("wrong proto received"))
 	}
-	ctx.HandleRead(imMsg)
 }
 func (ImCodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Message) {
 	switch s := message.(type) {

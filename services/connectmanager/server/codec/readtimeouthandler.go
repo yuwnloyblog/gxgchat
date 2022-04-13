@@ -23,6 +23,7 @@ func (handler *ReadTimeoutHandler) HandleActive(ctx netty.ActiveContext) {
 	time.AfterFunc(time.Duration(handler.timeoutMillis)*time.Millisecond, func() {
 		handler.checkTimeout(ctx)
 	})
+	ctx.HandleActive()
 }
 
 func (handler *ReadTimeoutHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {

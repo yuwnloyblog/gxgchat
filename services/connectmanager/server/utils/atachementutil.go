@@ -52,6 +52,13 @@ func GetContextAttrString(ctx netty.HandlerContext, key string) string {
 func GetConnSession(ctx netty.HandlerContext) string {
 	return GetContextAttrString(ctx, StateKey_ConnectSession)
 }
+func GetConnCreateTime(ctx netty.HandlerContext) int64 {
+	obj := GetContextAttr(ctx, StateKey_ConnectCreateTime)
+	if obj != nil {
+		return obj.(int64)
+	}
+	return 0
+}
 func GetCtxLocker(ctx netty.HandlerContext) *sync.Mutex {
 	obj := GetContextAttr(ctx, StateKey_CtxLocker)
 	if obj == nil {

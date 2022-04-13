@@ -1,8 +1,6 @@
 package server
 
 import (
-	"fmt"
-
 	"github.com/go-netty/go-netty"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager/server/codec"
 )
@@ -15,8 +13,6 @@ func (handler ImMessageHandler) HandleActive(ctx netty.ActiveContext) {
 	if handler.listener != nil {
 		handler.listener.Create(ctx)
 	}
-	fmt.Println("active")
-	//ctx.HandleActive()
 }
 
 func (handler ImMessageHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
@@ -47,7 +43,7 @@ func (handler ImMessageHandler) HandleInactive(ctx netty.InactiveContext, ex net
 	if handler.listener != nil {
 		handler.listener.Close(ctx)
 	}
-	fmt.Println("inactive", ex)
+	//fmt.Println("inactive", ex)
 	ctx.Close(ex)
 	//ctx.HandleInactive(ex)
 }
@@ -56,7 +52,7 @@ func (handler ImMessageHandler) HandleException(ctx netty.ExceptionContext, ex n
 	if handler.listener != nil {
 		handler.listener.ExceptionCaught(ctx, ex)
 	}
-	fmt.Println("exception")
+	//fmt.Println("exception")
 	ctx.Close(ex)
 	//ctx.HandleException(ex)
 }

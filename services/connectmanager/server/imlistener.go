@@ -31,9 +31,6 @@ type ImListener interface {
 type ImListenerImpl struct{}
 
 func (*ImListenerImpl) Create(ctx netty.ActiveContext) {
-	// utils.SetContextAttr(ctx, utils.StateKey_ConnectSession, tools.GenerateUUIDShortString())
-	// utils.SetContextAttr(ctx, utils.StateKey_ConnectCreateTime, time.Now().UnixMilli())
-	// utils.SetContextAttr(ctx, utils.StateKey_CtxLocker, &sync.Mutex{})
 }
 func (*ImListenerImpl) Close(ctx netty.InactiveContext) {
 }
@@ -47,13 +44,19 @@ func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, seq [2]byte, ctx net
 	//check something
 
 	//success
-	logs.Info(utils.GetConnSession(ctx), utils.Action_Connect, msg.Appkey, userId, msg.SdkVersion, msg.DeviceId, msg.Platform, msg.DeviceCompany, msg.DeviceModel, msg.DeviceOsVersion, msg.NetworkId, msg.IspNum, clientIp)
+	curr := time.Now().UnixMilli()
+	rtt := int64(-1)
+	createTime := utils.GetConnCreateTime(ctx)
+	if createTime > 0 {
+		rtt = curr - createTime
+	}
+	logs.Info(utils.GetConnSession(ctx), utils.Action_Connect, msg.Appkey, userId, msg.SdkVersion, msg.DeviceId, msg.Platform, msg.DeviceCompany, msg.DeviceModel, msg.DeviceOsVersion, msg.NetworkId, msg.IspNum, clientIp, rtt)
 	managers.PutInContextCache(ctx)
 	msgAck := codec.NewConnectAckMessage(seq, &codec.ConnectAckMsgBody{
 		Code:      utils.ConnectAckState_Access,
 		UserId:    msg.Token,
 		Session:   utils.GetConnSession(ctx),
-		Timestamp: time.Now().UnixMilli(),
+		Timestamp: curr,
 	})
 	utils.SetContextAttr(ctx, utils.StateKey_Appkey, msg.Appkey)
 	utils.SetContextAttr(ctx, utils.StateKey_UserID, userId)
