@@ -10,11 +10,11 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-type PrivateMsgActor struct {
+type ChatMsgActor struct {
 	clusters.BaseActor
 }
 
-func (actor *PrivateMsgActor) OnReceive(input proto.Message) {
+func (actor ChatMsgActor) OnReceive(input proto.Message) {
 	if upMsg, ok := input.(*pbobjs.UpMsg); ok {
 		fmt.Println(upMsg)
 		userPubAck := clusters.CreateUserPubAckWraper(0, "msg-id", time.Now().UnixMilli(), actor.Context)
@@ -22,6 +22,6 @@ func (actor *PrivateMsgActor) OnReceive(input proto.Message) {
 	}
 }
 
-func (actor *PrivateMsgActor) CreateInputObj() proto.Message {
+func (actor ChatMsgActor) CreateInputObj() proto.Message {
 	return &pbobjs.UpMsg{}
 }

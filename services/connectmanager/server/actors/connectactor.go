@@ -12,7 +12,7 @@ type ConnectActor struct {
 	actorsystem.UntypedActor
 }
 
-func (actor ConnectActor) OnReceive(input proto.Message) {
+func (actor *ConnectActor) OnReceive(input proto.Message) {
 	if rpcMsg, ok := input.(*pbobjs.RpcMessageWraper); ok {
 		if rpcMsg.RpcMsgType == pbobjs.RpcMsgType_UserPubAck {
 			managers.PublishUserPubAckMessage(rpcMsg.AppKey, rpcMsg.RequesterId, rpcMsg.Session, &codec.PublishAckMsgBody{
@@ -50,6 +50,6 @@ func (actor ConnectActor) OnReceive(input proto.Message) {
 	}
 }
 
-func (actor ConnectActor) CreateInputObj() proto.Message {
+func (actor *ConnectActor) CreateInputObj() proto.Message {
 	return &pbobjs.RpcMessageWraper{}
 }

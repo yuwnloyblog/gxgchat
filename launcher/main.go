@@ -8,6 +8,7 @@ import (
 	"github.com/yuwnloyblog/gxgchat/commons/dbs"
 	"github.com/yuwnloyblog/gxgchat/commons/imstarters"
 	"github.com/yuwnloyblog/gxgchat/commons/logs"
+	"github.com/yuwnloyblog/gxgchat/services/chatroom"
 	"github.com/yuwnloyblog/gxgchat/services/connectmanager"
 	"github.com/yuwnloyblog/gxgchat/services/message"
 )
@@ -34,7 +35,9 @@ func main() {
 	}
 
 	imstarters.Loaded(&connectmanager.ConnectManager{})
-	imstarters.Loaded(message.MessageManager{})
+	imstarters.Loaded(&message.MessageManager{})
+	imstarters.Loaded(&chatroom.ChatRoomManager{})
+
 	imstarters.Startup()
 
 	waitgroup.Wait()

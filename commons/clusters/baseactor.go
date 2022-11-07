@@ -46,11 +46,11 @@ func (actor *BaseActor) SetContext(ctx BaseContext) {
 	actor.Context = ctx
 }
 
-func (actor baseProcessActor) CreateInputObj() proto.Message {
+func (actor *baseProcessActor) CreateInputObj() proto.Message {
 	return &pbobjs.RpcMessageWraper{}
 }
 
-func (actor baseProcessActor) OnReceive(input proto.Message) {
+func (actor *baseProcessActor) OnReceive(input proto.Message) {
 	var err error
 	if input != nil {
 		ssRequest, ok := input.(*pbobjs.RpcMessageWraper)
@@ -94,20 +94,20 @@ func (actor baseProcessActor) OnReceive(input proto.Message) {
 	}
 }
 
-func (actor baseProcessActor) SetSender(sender actorsystem.ActorRef) {
+func (actor *baseProcessActor) SetSender(sender actorsystem.ActorRef) {
 	senderHandler, ok := actor.exeActor.(actorsystem.ISenderHandler)
 	if ok {
 		senderHandler.SetSender(sender)
 	}
 }
-func (actor baseProcessActor) SetSelf(self actorsystem.ActorRef) {
+func (actor *baseProcessActor) SetSelf(self actorsystem.ActorRef) {
 	selfHandler, ok := actor.exeActor.(actorsystem.ISelfHandler)
 	if ok {
 		selfHandler.SetSelf(self)
 	}
 }
 
-func (actor baseProcessActor) OnTimeout() {
+func (actor *baseProcessActor) OnTimeout() {
 	timeoutHandler, ok := actor.exeActor.(actorsystem.ITimeoutHandler)
 	if ok {
 		timeoutHandler.OnTimeout()
